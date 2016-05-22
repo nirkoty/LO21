@@ -9,7 +9,7 @@ class LitteraleEntiere :  public Litterale
 public:
     LitteraleEntiere();
     LitteraleEntiere(bool neg, int val);
-    int getValeur(){return valeur;}
+    int getValeur() const {return valeur;}
     QString toString();
     static bool estLitteraleEntiere(QString bloc);
 

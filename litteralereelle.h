@@ -6,15 +6,13 @@
 class LitteraleReelle : public Litterale
 {
 public:
-    LitteraleReelle(bool neg, double nom, double denom);
-    double getNominateur(){return nominateur;}
-    double getDenominateur(){return denominateur;}
+    LitteraleReelle(bool neg, double val);
+    double getValeur() const {return valeur;}
     QString toString();
     static bool estLitteraleReelle(QString bloc);
 
 private:
-    double nominateur;
-    double denominateur;
+    double valeur;
 };
 
 #endif // LITTERALEREELLE_H
