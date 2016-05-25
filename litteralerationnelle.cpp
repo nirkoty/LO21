@@ -11,7 +11,8 @@ LitteraleRationnelle::LitteraleRationnelle(bool neg, LitteraleEntiere nom, Litte
 
 
 QString LitteraleRationnelle::toString(){
-
+    QString q = "coucou";
+    return q;
  }
 
 

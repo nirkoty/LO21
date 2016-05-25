@@ -36,5 +36,6 @@ bool LitteraleProgramme::estLitteraleProgramme(QString bloc){
 }
 
 QString LitteraleProgramme::toString(){
-
+    QString q = "coucou";
+    return q;
 }

@@ -27,5 +27,6 @@ bool LitteraleComplexe::estLitteraleComplexe(QString bloc){
 
 
 QString LitteraleComplexe::toString(){
-
+    QString q = "coucou";
+    return q;
 }
