@@ -7,8 +7,17 @@ LitteraleReelle::LitteraleReelle(bool neg, double val) : Litterale(neg), valeur(
 
 }
 
+LitteraleReelle::LitteraleReelle(QString exp){
+    if(exp.at(0)==QChar('-')){
+        negative=true;
+        exp.remove(0, 1);
+    }
+    valeur=exp.toDouble();
+}
+
 QString LitteraleReelle::toString(){
 
+      return QString::number(valeur);
 }
 
 bool LitteraleReelle::estLitteraleReelle(QString bloc){

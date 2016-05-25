@@ -21,7 +21,9 @@ SOURCES += main.cpp\
     litteralerationnelle.cpp \
     litteralecomplexe.cpp \
     litteraleprogramme.cpp \
-    operateur.cpp
+    operateur.cpp \
+    pile.cpp \
+    manager.cpp
 
 HEADERS  += mainwindow.h \
     operande.h \
@@ -31,6 +33,8 @@ HEADERS  += mainwindow.h \
     litteralerationnelle.h \
     litteralecomplexe.h \
     litteraleprogramme.h \
-    operateur.h
+    operateur.h \
+    pile.h \
+    manager.h
 
 FORMS    += mainwindow.ui

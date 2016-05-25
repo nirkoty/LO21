@@ -11,9 +11,9 @@ public:
     Litterale();
     Litterale(bool neg);
     bool estNegative(){return negative;}
-    //virtual QString toString() = 0;
+    virtual QString toString()=0;
 
-private:
+protected:
     bool negative;
 };
 

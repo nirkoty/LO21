@@ -8,14 +8,15 @@
 class LitteraleComplexe : public Litterale
 {
 public:
-    LitteraleComplexe(bool neg, Litterale re, Litterale im);
-    Litterale getReelle() const {return partieRelle;}
-    Litterale getImaginaire() const {return partieImaginaire;}
+    LitteraleComplexe(bool neg, LitteraleReelle re, LitteraleReelle im);
+    LitteraleReelle getReelle() const {return partieRelle;}
+    LitteraleReelle getImaginaire() const {return partieImaginaire;}
+    QString toString();
     static bool estLitteraleComplexe(QString bloc);
 
 private :
-    Litterale partieRelle;
-    Litterale partieImaginaire;
+    LitteraleReelle partieRelle;
+    LitteraleReelle partieImaginaire;
 };
 
 #endif // LITTERALECOMPLEXE_H

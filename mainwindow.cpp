@@ -8,19 +8,20 @@
 #include "QWidget"
 #include "QtGui"
 #include "QGridLayout"
+#include "QTextEdit"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(parent), manager(man)
 {
 
 
 
     QHBoxLayout *mainLayout= new QHBoxLayout();
-    QListView *vuePile = new QListView();
+    QTextEdit *vuePile = new QTextEdit();
     vuePile->setGeometry(0,0,100,300);
 
     QVBoxLayout *verticalLayout = new QVBoxLayout();
-    QListView *vueHistoriqueCommandes = new QListView();
-    QLineEdit *inputLine = new QLineEdit();
+    QTextEdit *vueHistoriqueCommandes = new QTextEdit();
+    inputLine = new QLineEdit();
 
 
     QGridLayout *layoutClavier = new QGridLayout;
@@ -68,7 +69,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QWidget *zoneCentrale = new QWidget;
     zoneCentrale->setLayout(mainLayout);
 
-        setCentralWidget(zoneCentrale);
+    QObject::connect(inputLine, SIGNAL(textChanged(QString)), this, SLOT(interpreter(QString))) ;
+
+    pile.setView(vuePile);
+
+    setCentralWidget(zoneCentrale);
 
 
 }
@@ -77,3 +82,10 @@ MainWindow::~MainWindow()
 {
 
 }
+
+void MainWindow::interpreter(QString exp){
+   if(manager->interpreter(exp))
+    inputLine->clear();
+
+}
+

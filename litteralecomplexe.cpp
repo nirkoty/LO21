@@ -3,7 +3,7 @@
 #include "litteralereelle.h"
 #include "litteraleentiere.h"
 
-LitteraleComplexe::LitteraleComplexe(bool neg, Litterale re, Litterale im) : Litterale(neg), partieRelle(im), partieImaginaire(im)
+LitteraleComplexe::LitteraleComplexe(bool neg, LitteraleReelle re, LitteraleReelle im) : Litterale(neg), partieRelle(im), partieImaginaire(im)
 {
 
 }
@@ -23,4 +23,9 @@ bool LitteraleComplexe::estLitteraleComplexe(QString bloc){
         return false;
 
     return true;
+}
+
+
+QString LitteraleComplexe::toString(){
+
 }

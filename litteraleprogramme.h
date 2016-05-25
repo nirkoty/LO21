@@ -4,15 +4,17 @@
 
 #include "QString"
 #include "operande.h"
+#include "litterale.h"
 
-class LitteraleProgramme
+class LitteraleProgramme : public Litterale
 {
 public:
     LitteraleProgramme(QString programme);
     bool static estLitteraleProgramme(QString bloc);
+    QString toString();
 
 private:
-    Operande operandes[];
+    //Operande operandes[];
     int nbOperandes;
 
 };

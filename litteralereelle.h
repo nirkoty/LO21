@@ -7,6 +7,7 @@ class LitteraleReelle : public Litterale
 {
 public:
     LitteraleReelle(bool neg, double val);
+    LitteraleReelle(QString exp);
     double getValeur() const {return valeur;}
     QString toString();
     static bool estLitteraleReelle(QString bloc);

@@ -6,8 +6,16 @@ LitteraleEntiere::LitteraleEntiere(bool neg, int val) : Litterale(neg), valeur(v
 
 }
 
-QString LitteraleEntiere::toString(){
+LitteraleEntiere::LitteraleEntiere(QString exp){
+    if(exp.at(0)=='-'){
+        negative=true;
+        exp.remove(0,1);
+    }
+    valeur=exp.toInt();
+}
 
+QString LitteraleEntiere::toString(){
+    return QString::number(valeur);
 }
 
 
