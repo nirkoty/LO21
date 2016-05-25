@@ -20,7 +20,9 @@ bool Manager::interpreter(QString input){
          if(Operateur::estOperateur(operandes.last()))
              nbAEmpiler = operandes.length()-1;
          else
-             nbAEmpiler = operandes.length();
+            return false;
+
+
          for(int i=0; i<nbAEmpiler; i++)
          {
              if(LitteraleReelle::estLitteraleReelle(operandes.at(i)))
@@ -34,11 +36,9 @@ bool Manager::interpreter(QString input){
              qDebug()<<pile.taille();
          }
 
-         if(nbAEmpiler==operandes.length())
-             return true;
-         else{
+
             executer(Operateur(operandes.last()));
-         }
+
 
     }
     else
