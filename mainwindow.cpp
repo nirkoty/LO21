@@ -9,6 +9,8 @@
 #include "QtGui"
 #include "QGridLayout"
 #include "QTextEdit"
+#include "QTabWidget"
+#include "QErrorMessage"
 
 MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(parent), manager(man)
 {
@@ -22,6 +24,8 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
     QVBoxLayout *verticalLayout = new QVBoxLayout();
     QTextEdit *vueHistoriqueCommandes = new QTextEdit();
     inputLine = new QLineEdit();
+
+    QTabWidget *tabWidget = new QTabWidget();
 
 
     QGridLayout *layoutClavier = new QGridLayout;
@@ -66,17 +70,123 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
     mainLayout->addWidget(vuePile);
     mainLayout->addLayout(verticalLayout);
 
-    QWidget *zoneCentrale = new QWidget;
-    zoneCentrale->setLayout(mainLayout);
+    //QWidget *zoneCentrale = new QWidget;
+    //zoneCentrale->setLayout(mainLayout);
+
+    QWidget* tab1 = new QWidget();
+    tab1->setLayout(mainLayout);
+    tabWidget->addTab(tab1, "Principal");
 
     QObject::connect(inputLine, SIGNAL(textChanged(QString)), this, SLOT(interpreter(QString))) ;
 
     pile.setView(vuePile);
 
-    setCentralWidget(zoneCentrale);
+
+
+
+
+
+
+
+
+    //---------------------------------TAB2--------------------------------------------
+
+
+    QHBoxLayout *layoutProgramme = new QHBoxLayout();
+    QVBoxLayout *layoutEditionProgramme = new QVBoxLayout();
+    QHBoxLayout *layoutBoutonsProgramme = new QHBoxLayout();
+
+    listeProgrammes = new QListView();
+
+    zoneProgramme = new QTextEdit();
+    zoneIdentifiant = new QLineEdit();
+    boutonValider = new QPushButton("Valider");
+    boutonEffacer = new QPushButton("Effacer");
+    boutonSupprimer = new QPushButton("Supprimer");
+    boutonSupprimer->setEnabled(false);
+
+
+
+   layoutBoutonsProgramme->addWidget(boutonValider);
+   layoutBoutonsProgramme->addWidget(boutonEffacer);
+   layoutBoutonsProgramme->addWidget(boutonSupprimer);
+
+
+   layoutEditionProgramme->addWidget(zoneProgramme);
+   layoutEditionProgramme->addWidget(zoneIdentifiant);
+   layoutEditionProgramme->addLayout(layoutBoutonsProgramme);
+
+   layoutProgramme->addLayout(layoutEditionProgramme);
+   layoutProgramme->addWidget(listeProgrammes);
+
+   QWidget* tab2 = new QWidget();
+
+   tab2->setLayout(layoutProgramme);
+
+   tabWidget->addTab(tab2, "Programmes");
+
+
+
+   QXmlStreamReader xmlReader;
+   QFile fileProgramme("programmes.xml");
+   fileProgramme.open(QFile::ReadOnly);
+   xmlReader.setDevice(&fileProgramme);
+
+
+
+   xmlReader.readNext();
+   QString strIdentifiant;
+   QString str;
+   while(!xmlReader.atEnd() && !xmlReader.hasError()) {
+
+           QXmlStreamReader::TokenType token = xmlReader.readNext();
+
+           if(token == QXmlStreamReader::StartDocument) {
+                   continue;
+           }
+
+           if(token == QXmlStreamReader::StartElement) {
+
+                   if(xmlReader.name() == "identifiant") {
+                           strIdentifiant= xmlReader.readElementText();
+                   }
+
+                   if(xmlReader.name() == "string") {
+                        str= xmlReader.readElementText();
+                        manager->insererProgramme(strIdentifiant, str);
+                   }
+           }
+   }
+
+   QStringList* listeProgrammesStr = manager->getListProgrammes();
+
+   modeleProgrammes = new QStringListModel(*listeProgrammesStr, this);
+
+   listeProgrammes->setEditTriggers(QAbstractItemView::NoEditTriggers);
+   listeProgrammes->setModel(modeleProgrammes);
+
+
+
+   fileProgramme.close();
+
+   QObject::connect(boutonValider, SIGNAL(clicked(bool)), this, SLOT(ajouterProgramme()));
+   QObject::connect(listeProgrammes, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(modifierProgramme(QModelIndex)));
+   QObject::connect(boutonEffacer, SIGNAL(clicked(bool)), this, SLOT(effacerChampsProgramme()));
+
+
+   setCentralWidget(tabWidget);
 
 
 }
+
+
+
+
+
+
+
+
+
 
 MainWindow::~MainWindow()
 {
@@ -89,3 +199,70 @@ void MainWindow::interpreter(QString exp){
 
 }
 
+void MainWindow::ajouterProgramme(){
+    QMap<QString, QString>* mapProgramme=manager->getMapProgramme();
+    QMapIterator<QString, QString> it(*mapProgramme);
+    if(zoneIdentifiant->text()!="" && (!mapProgramme->contains(zoneIdentifiant->text()) || modificationProgramme)){
+
+        LitteraleProgramme newProgramme(zoneProgramme->toPlainText());
+
+        if(modificationProgramme)
+            //mapProgramme->find(zoneIdentifiant->text());
+        else
+            manager->insererProgramme(zoneIdentifiant->text(), newProgramme.toString());
+
+        modeleProgrammes->insertRow(modeleProgrammes->rowCount());
+        QModelIndex index = modeleProgrammes->index(modeleProgrammes->rowCount()-1);
+        modeleProgrammes->setData(index, zoneIdentifiant->text());
+
+
+        QString path("programmes.xml");
+        QFile file(path);
+        file.open(QFile::WriteOnly);
+        QXmlStreamWriter xmlWriter(&file);
+        xmlWriter.setAutoFormatting(true);
+        xmlWriter.setAutoFormattingIndent(2);
+        xmlWriter.writeStartDocument();
+
+
+
+
+        xmlWriter.writeStartElement("programmes");
+        while(it.hasNext()){
+
+            it.next();
+            xmlWriter.writeStartElement("programme");
+            xmlWriter.writeTextElement("identifiant",it.key());
+            xmlWriter.writeTextElement("string", it.value());
+            xmlWriter.writeEndElement();
+        }
+
+        xmlWriter.writeEndElement();
+        xmlWriter.writeEndDocument();
+        zoneIdentifiant->clear();
+        zoneProgramme->clear();
+    }
+    else{
+        QErrorMessage error;
+        error.showMessage("Ce programme existe déja");
+    }
+ }
+
+
+
+void MainWindow::modifierProgramme(QModelIndex modelIndex){
+
+    modificationProgramme=true;
+    boutonSupprimer->setEnabled(true);
+    QMap<QString, QString>* mapProgramme=manager->getMapProgramme();
+    zoneProgramme->setText(mapProgramme->value(manager->getListProgrammes()->at(modelIndex.row())));
+    zoneIdentifiant->setText(manager->getListProgrammes()->at(modelIndex.row()));
+
+}
+
+void MainWindow::effacerChampsProgramme(){
+    zoneProgramme->clear();
+    zoneIdentifiant->clear();
+    boutonSupprimer->setDisabled(true);
+    modificationProgramme=false;
+}

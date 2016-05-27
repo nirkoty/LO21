@@ -4,6 +4,7 @@
 
 #include "QString"
 #include "operande.h"
+#include <vector>
 #include "litterale.h"
 
 class LitteraleProgramme : public Litterale
@@ -14,7 +15,7 @@ public:
     QString toString();
 
 private:
-    //Operande operandes[];
+    std::vector<Operande*> operandes;
     int nbOperandes;
 
 };

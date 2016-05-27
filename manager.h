@@ -11,6 +11,7 @@
 #include "operateur.h"
 #include <QDebug>
 #include <QObject>
+#include <QMap>
 
 class Manager : public QObject
 {
@@ -19,9 +20,14 @@ public:
     Manager(Pile& p);
     bool interpreter(QString input);
     void executer(Operateur operateur);
+    QMap<QString, QString>* getMapProgramme() const {return mapProgramme;}
+    void insererProgramme(QString id, QString str);
+    QStringList* getListProgrammes() const{return stringListProgrammes;}
 
 private:
     Pile& pile;
+    QMap<QString, QString>* mapProgramme;
+    QStringList *stringListProgrammes;
 
 
 };

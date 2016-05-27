@@ -3,14 +3,16 @@
 
 
 #include "QString"
+#include "operande.h"
 
-class Operateur
+class Operateur : public Operande
 {
 public:
     Operateur(QString op);
     QString getType() const {return type;}
     int getArite() const {return arite;}
     static bool estOperateur(QString type);
+    QString toString(){return type;}
 
 private:
     QString type;
