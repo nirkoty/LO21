@@ -14,6 +14,9 @@ public:
     bool static estLitteraleProgramme(QString bloc);
     QString toString();
     Litterale* operator+(Litterale& lit2){}
+    Litterale* operator*(Litterale& lit2){}
+    Litterale* operator/(Litterale& lit2){}
+    Litterale* operator-(Litterale& lit2){}
 
 private:
     std::vector<Operande*> operandes;

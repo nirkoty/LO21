@@ -13,6 +13,9 @@ public:
     QString toString();
     static bool estLitteraleRationnelle(QString bloc);
     Litterale* operator+(Litterale& lit2){}
+    Litterale* operator*(Litterale& lit2){}
+    Litterale* operator/(Litterale& lit2){}
+    Litterale* operator-(Litterale& lit2){}
 
 private:
     LitteraleEntiere nominateur;

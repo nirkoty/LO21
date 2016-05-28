@@ -12,6 +12,9 @@ public:
     Litterale(int s);
     int getSigne(){return signe;}
     virtual Litterale* operator+(Litterale& lit2) = 0;
+    virtual Litterale* operator*(Litterale& lit2) = 0;
+    virtual Litterale* operator-(Litterale& lit2) = 0;
+    virtual Litterale* operator/(Litterale& lit2) = 0;
 
 protected:
     int signe;

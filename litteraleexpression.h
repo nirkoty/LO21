@@ -12,8 +12,13 @@ class LitteraleExpression : public Litterale
 public:
     LitteraleExpression(QString exp);
     static bool estLitteraleExpression(QString exp);
-    QString toString() const {return expression;}
-    void evaluer();
+    QString toString() {return expression;}
+    Litterale* evaluer();
+    Litterale* evaluerRec(QString exp);
+    Litterale* operator+(Litterale& lit2){}
+    Litterale* operator*(Litterale& lit2){}
+    Litterale* operator/(Litterale& lit2){}
+    Litterale* operator-(Litterale& lit2){}
 
 private:
     QString expression;

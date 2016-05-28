@@ -14,7 +14,9 @@ public:
     QString toString();
     static bool estLitteraleEntiere(QString bloc);
     Litterale* operator+(Litterale& lit2);
-    Litterale* ajouter(Litterale* lit2);
+    Litterale* operator*(Litterale& lit2);
+    Litterale* operator/(Litterale& lit2);
+    Litterale* operator-(Litterale& lit2);
 
 
 private:
