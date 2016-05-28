@@ -3,7 +3,7 @@
 #include "QDebug"
 
 
-LitteraleRationnelle::LitteraleRationnelle(bool neg, LitteraleEntiere nom, LitteraleEntiere denom) : Litterale(neg), nominateur(nom), denominateur(denom)
+LitteraleRationnelle::LitteraleRationnelle(int s, LitteraleEntiere nom, LitteraleEntiere denom) : Litterale(s), nominateur(nom), denominateur(denom)
 {
 
 }

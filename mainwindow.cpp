@@ -18,7 +18,7 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
 
 
     QHBoxLayout *mainLayout= new QHBoxLayout();
-    QTextEdit *vuePile = new QTextEdit();
+    QListView *vuePile = new QListView();
     vuePile->setGeometry(0,0,100,300);
 
     QVBoxLayout *verticalLayout = new QVBoxLayout();

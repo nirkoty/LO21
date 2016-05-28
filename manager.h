@@ -23,6 +23,7 @@ public:
     QMap<QString, QString>* getMapProgramme() const {return mapProgramme;}
     void insererProgramme(QString id, QString str);
     QStringList* getListProgrammes() const{return stringListProgrammes;}
+    void supprimerProgramme(QString id);
 
 private:
     Pile& pile;

@@ -11,6 +11,7 @@
 #include <QListView>
 #include <QStringListModel>
 #include <QPushButton>
+#include <QMessageBox>
 
 namespace Ui {
 class MainWindow;
@@ -35,13 +36,16 @@ private:
     QPushButton *boutonValider;
     QPushButton *boutonEffacer;
     QPushButton *boutonSupprimer;
-    bool modificationProgramme;
+    QPushButton *boutonModifier;
 
 public slots :
     void interpreter(QString exp);
     void ajouterProgramme();
-    void modifierProgramme(QModelIndex modelIndex);
+    void supprimerProgramme();
+    void afficherProgrammeListe(QModelIndex modelIndex);
+    void modifierProgramme();
     void effacerChampsProgramme();
+    void ecrireFichierProgramme();
 
 
 };

@@ -1,7 +1,7 @@
 #ifndef LITTERALE_H
 #define LITTERALE_H
 
-#include "QString"
+#include <QString>
 #include "operande.h"
 
 class Litterale : public Operande
@@ -9,11 +9,12 @@ class Litterale : public Operande
 
 public:
     Litterale();
-    Litterale(bool neg);
-    bool estNegative(){return negative;}
+    Litterale(int s);
+    int getSigne(){return signe;}
+    virtual Litterale* operator+(Litterale& lit2) = 0;
 
 protected:
-    bool negative;
+    int signe;
 };
 
 #endif // LITTERALE_H

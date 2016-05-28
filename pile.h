@@ -6,18 +6,22 @@
 #include <vector>
 #include <QTextEdit>
 #include <QDebug>
+#include <QListView>
+#include <QStringListModel>
 
 class Pile
 {
 public:
     Pile();
     void empiler(Litterale* lit);
-    void setView(QTextEdit* viewPile);
+    void setView(QListView* viewPile);
+    Litterale* depiler();
     int taille() const {return vecteur.size();}
 
 private:
     std::vector<Litterale*>vecteur;
-    QTextEdit* view;
+    QListView* view;
+    QStringListModel *modeleProgrammes;
 
 };
 

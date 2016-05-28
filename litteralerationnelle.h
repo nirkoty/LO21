@@ -7,11 +7,12 @@
 class LitteraleRationnelle : public Litterale
 {
 public:
-    LitteraleRationnelle(bool neg, LitteraleEntiere nom, LitteraleEntiere denom);
+    LitteraleRationnelle(int s, LitteraleEntiere nom, LitteraleEntiere denom);
     LitteraleEntiere getNominateur(){return nominateur;}
     LitteraleEntiere getDenominateur(){return denominateur;}
     QString toString();
     static bool estLitteraleRationnelle(QString bloc);
+    Litterale* operator+(Litterale& lit2){}
 
 private:
     LitteraleEntiere nominateur;

@@ -3,7 +3,7 @@
 #include "litteralereelle.h"
 #include "litteraleentiere.h"
 
-LitteraleComplexe::LitteraleComplexe(bool neg, LitteraleReelle re, LitteraleReelle im) : Litterale(neg), partieRelle(im), partieImaginaire(im)
+LitteraleComplexe::LitteraleComplexe(int s, LitteraleReelle re, LitteraleReelle im) : Litterale(s), partieRelle(im), partieImaginaire(im)
 {
 
 }

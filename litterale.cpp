@@ -1,11 +1,11 @@
 #include "litterale.h"
 
-Litterale::Litterale(bool neg) : negative(neg)
+Litterale::Litterale(int s) : signe(s)
 {
 
 }
 
 Litterale::Litterale()
 {
-
+    signe=1;
 }

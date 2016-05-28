@@ -2,7 +2,7 @@
 #include <typeinfo>
 #include "litteraleentiere.h"
 
-Pile::Pile()
+Pile::Pile() : modeleProgrammes(new QStringListModel)
 {
 
 }
@@ -21,10 +21,22 @@ void Pile::empiler(Litterale *lit){
     //qDebug()<<t->getValeur();
     qDebug()<<lit->toString();
 
-    view->append(lit->toString());
+    modeleProgrammes->insertRow(modeleProgrammes->rowCount());
+    QModelIndex index = modeleProgrammes->index(modeleProgrammes->rowCount()-1);
+    modeleProgrammes->setData(index, lit->toString());
+
 }
 
-void Pile::setView(QTextEdit *viewPile){
+void Pile::setView(QListView *viewPile){
     view=viewPile;
+    view->setModel(modeleProgrammes);
 
+
+}
+
+Litterale* Pile::depiler(){
+    modeleProgrammes->removeRow(vecteur.size()-1);
+    Litterale* tmp = vecteur.at(vecteur.size()-1);
+    vecteur.pop_back();
+    return tmp;
 }
