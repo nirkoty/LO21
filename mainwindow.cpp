@@ -100,15 +100,18 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
 
     zoneProgramme = new QTextEdit();
     zoneIdentifiant = new QLineEdit();
-    boutonValider = new QPushButton("Valider");
+    boutonValider = new QPushButton("Ajouter");
     boutonEffacer = new QPushButton("Effacer");
+    boutonModifier = new QPushButton("Modifier");
     boutonSupprimer = new QPushButton("Supprimer");
     boutonSupprimer->setEnabled(false);
+    boutonModifier->setEnabled(false);
 
 
 
    layoutBoutonsProgramme->addWidget(boutonValider);
    layoutBoutonsProgramme->addWidget(boutonEffacer);
+   layoutBoutonsProgramme->addWidget(boutonModifier);
    layoutBoutonsProgramme->addWidget(boutonSupprimer);
 
 
@@ -170,21 +173,16 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
    fileProgramme.close();
 
    QObject::connect(boutonValider, SIGNAL(clicked(bool)), this, SLOT(ajouterProgramme()));
-   QObject::connect(listeProgrammes, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(modifierProgramme(QModelIndex)));
+   QObject::connect(listeProgrammes, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(afficherProgrammeListe(QModelIndex)));
    QObject::connect(boutonEffacer, SIGNAL(clicked(bool)), this, SLOT(effacerChampsProgramme()));
+   QObject::connect(boutonSupprimer, SIGNAL(clicked(bool)), this, SLOT(supprimerProgramme()));
+   QObject::connect(boutonModifier, SIGNAL(clicked(bool)), this, SLOT(modifierProgramme()));
 
 
    setCentralWidget(tabWidget);
 
 
 }
-
-
-
-
-
-
-
 
 
 
@@ -202,61 +200,66 @@ void MainWindow::interpreter(QString exp){
 void MainWindow::ajouterProgramme(){
     QMap<QString, QString>* mapProgramme=manager->getMapProgramme();
     QMapIterator<QString, QString> it(*mapProgramme);
-    if(zoneIdentifiant->text()!="" && (!mapProgramme->contains(zoneIdentifiant->text()) || modificationProgramme)){
+
+    if(zoneIdentifiant->text()!="" && !mapProgramme->contains(zoneIdentifiant->text())){
 
         LitteraleProgramme newProgramme(zoneProgramme->toPlainText());
 
-        if(modificationProgramme)
-            //mapProgramme->find(zoneIdentifiant->text());
-        else
-            manager->insererProgramme(zoneIdentifiant->text(), newProgramme.toString());
+
+
+
+        manager->insererProgramme(zoneIdentifiant->text(), newProgramme.toString());
+
 
         modeleProgrammes->insertRow(modeleProgrammes->rowCount());
         QModelIndex index = modeleProgrammes->index(modeleProgrammes->rowCount()-1);
         modeleProgrammes->setData(index, zoneIdentifiant->text());
 
 
-        QString path("programmes.xml");
-        QFile file(path);
-        file.open(QFile::WriteOnly);
-        QXmlStreamWriter xmlWriter(&file);
-        xmlWriter.setAutoFormatting(true);
-        xmlWriter.setAutoFormattingIndent(2);
-        xmlWriter.writeStartDocument();
 
+        ecrireFichierProgramme();
 
-
-
-        xmlWriter.writeStartElement("programmes");
-        while(it.hasNext()){
-
-            it.next();
-            xmlWriter.writeStartElement("programme");
-            xmlWriter.writeTextElement("identifiant",it.key());
-            xmlWriter.writeTextElement("string", it.value());
-            xmlWriter.writeEndElement();
-        }
-
-        xmlWriter.writeEndElement();
-        xmlWriter.writeEndDocument();
-        zoneIdentifiant->clear();
-        zoneProgramme->clear();
     }
     else{
-        QErrorMessage error;
-        error.showMessage("Ce programme existe déja");
+        qDebug()<<"erreur ajout";
+        QMessageBox boiteErreur;
+        boiteErreur.setText("Un programme à ce nom existe déja");
+        boiteErreur.exec();
     }
  }
 
 
 
-void MainWindow::modifierProgramme(QModelIndex modelIndex){
+void MainWindow::afficherProgrammeListe(QModelIndex modelIndex){
 
-    modificationProgramme=true;
     boutonSupprimer->setEnabled(true);
+    boutonModifier->setEnabled(true);
     QMap<QString, QString>* mapProgramme=manager->getMapProgramme();
     zoneProgramme->setText(mapProgramme->value(manager->getListProgrammes()->at(modelIndex.row())));
     zoneIdentifiant->setText(manager->getListProgrammes()->at(modelIndex.row()));
+
+}
+
+
+void MainWindow::modifierProgramme(){
+    QMap<QString, QString>* mapProgramme=manager->getMapProgramme();
+    mapProgramme->remove(zoneIdentifiant->text());
+    manager->insererProgramme(zoneIdentifiant->text(), zoneProgramme->toPlainText());
+
+    ecrireFichierProgramme();
+}
+
+
+void MainWindow::supprimerProgramme(){
+    boutonSupprimer->setEnabled(false);
+    boutonModifier->setEnabled(false);
+    QMap<QString, QString>* mapProgramme=manager->getMapProgramme();
+    mapProgramme->remove(zoneIdentifiant->text());
+    QStringList programmesStr= modeleProgrammes->stringList();
+    int indexToDelete = programmesStr.indexOf(zoneIdentifiant->text());
+    modeleProgrammes->removeRow(indexToDelete);
+
+    ecrireFichierProgramme();
 
 }
 
@@ -264,5 +267,37 @@ void MainWindow::effacerChampsProgramme(){
     zoneProgramme->clear();
     zoneIdentifiant->clear();
     boutonSupprimer->setDisabled(true);
-    modificationProgramme=false;
+}
+
+void MainWindow::ecrireFichierProgramme(){
+
+
+    QMap<QString, QString>* mapProgramme=manager->getMapProgramme();
+    QMapIterator<QString, QString> it(*mapProgramme);
+
+    QString path("programmes.xml");
+    QFile file(path);
+    file.open(QFile::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.setAutoFormattingIndent(2);
+    xmlWriter.writeStartDocument();
+
+
+
+
+    xmlWriter.writeStartElement("programmes");
+    while(it.hasNext()){
+
+        it.next();
+        xmlWriter.writeStartElement("programme");
+        xmlWriter.writeTextElement("identifiant",it.key());
+        xmlWriter.writeTextElement("string", it.value());
+        xmlWriter.writeEndElement();
+    }
+
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndDocument();
+    zoneIdentifiant->clear();
+    zoneProgramme->clear();
 }
