@@ -15,10 +15,7 @@ public:
     QString toString() {return expression;}
     Litterale* evaluer();
     Litterale* evaluerRec(QString exp);
-    Litterale* operator+(Litterale& lit2){}
-    Litterale* operator*(Litterale& lit2){}
-    Litterale* operator/(Litterale& lit2){}
-    Litterale* operator-(Litterale& lit2){}
+
 
 private:
     QString expression;

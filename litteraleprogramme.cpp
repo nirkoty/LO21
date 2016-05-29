@@ -6,9 +6,9 @@
 #include "operateur.h"
 #include <QDebug>
 
-LitteraleProgramme::LitteraleProgramme(QString input) : Litterale()
+LitteraleProgramme::LitteraleProgramme(QString input) : Litterale(), programme(input)
 {
-    if(input.left(1)=="[" && input.right(1)=="]"){
+    /*if(input.left(1)=="[" && input.right(1)=="]"){
 
         input=input.remove(0,1);
         input=input.remove(input.length()-1,1);
@@ -59,7 +59,7 @@ LitteraleProgramme::LitteraleProgramme(QString input) : Litterale()
         }
 
 
-    }
+    }*/
 
 
 }
@@ -71,16 +71,17 @@ bool LitteraleProgramme::estLitteraleProgramme(QString bloc){
     return true;
 }
 
+QString LitteraleProgramme::getStrProgramme(){
+   return programme;
+
+}
+
 QString LitteraleProgramme::toString(){
-    QString str="[";
-
-    for(unsigned int i=0; i<operandes.size(); i++){
-        str.append(" "+operandes.at(i)->toString());
-    }
-
-    str.append(" ]");
-
+    QString str=programme;
+    str=str.remove(0,1);
+    str=str.remove(str.length()-1,1);
+    if(str.at(0)==' ')
+        str=str.remove(0,1);
 
     return str;
-
 }

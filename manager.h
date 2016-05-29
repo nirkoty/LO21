@@ -19,11 +19,13 @@ class Manager : public QObject
 public:
     Manager(Pile& p);
     bool interpreter(QString input);
-    void executer(Operateur operateur);
+    void executer(QString input);
     QMap<QString, QString>* getMapProgramme() const {return mapProgramme;}
     void insererProgramme(QString id, QString str);
     QStringList* getListProgrammes() const{return stringListProgrammes;}
     void supprimerProgramme(QString id);
+    bool estLitteraleAtome(QString input) const;
+    Litterale* getAtome(QString input);
 
 private:
     Pile& pile;

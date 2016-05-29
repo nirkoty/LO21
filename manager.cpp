@@ -9,37 +9,15 @@ Manager::Manager(Pile &p) : pile(p), mapProgramme(new QMap<QString, QString>), s
 
 bool Manager::interpreter(QString input){
 
-    QStringList litteralesStr = input.split(" ");
-    std::vector<Litterale*>litterales;
-    if(!input.contains("'")){
-        if(input.right(1)=="+" || input.right(1)=="-" || input.right(1)=="*" || input.right(1)=="/"){
-            for(unsigned int i=0; i<litteralesStr.size(); i++){
+   if(input.right(1)=="+" || input.right(1)=="-" || input.right(1)=="*" || input.right(1)=="/" || input.right(1)=="$"){
+        executer(input);
+        return true;
+   }
+   return false;
 
-                if(LitteraleReelle::estLitteraleReelle(litteralesStr.at(i)))
-                    pile.empiler(new LitteraleReelle(litteralesStr.at(i)));
-                else if (LitteraleEntiere::estLitteraleEntiere(litteralesStr.at(i)))
-                    pile.empiler(new LitteraleEntiere(litteralesStr.at(i)));
-                else if (Operateur::estOperateur(litteralesStr.at(i))){
-                    executer(Operateur(litteralesStr.at(i)));
-                    return true;
-                }
-            }
-        }
-        else
-            return false;
-    }
-    else{
-        if(input.count('\'')==2){
-            LitteraleExpression expression(input);
-            qDebug()<<expression.evaluer()->toString();
-            return true;
-        }
-        else
-            return false;
-    }
 }
 
-void Manager::executer(Operateur operateur){
+/*void Manager::executer(Operateur operateur){
     std::vector<Litterale*> litterales;
     qDebug()<<pile.taille();
     for(unsigned int i=0; i<operateur.getArite(); i++){
@@ -62,6 +40,46 @@ void Manager::executer(Operateur operateur){
 
     delete litterales.at(0);
     delete litterales.at(1);
+}*/
+
+void Manager::executer(QString input){
+
+    QString tmp;
+    while(input.length()>0){
+        qDebug()<<input;
+        tmp = input.left(input.indexOf(" "));
+        qDebug()<<"tmp "<<tmp;
+        if(input.indexOf(" ")!=-1)
+            input=input.remove(0, input.indexOf(" ")+1);
+        else
+            input="";
+
+        if(LitteraleReelle::estLitteraleReelle(tmp))
+            pile.empiler(new LitteraleReelle(tmp));
+        else if (LitteraleEntiere::estLitteraleEntiere(tmp))
+            pile.empiler(new LitteraleEntiere(tmp));
+        else if (Operateur::estOperateur(tmp)){
+            qDebug()<<"estUnOperateur";
+            Operateur op(tmp, &pile);
+            op.executer();
+        }
+        else if (LitteraleProgramme::estLitteraleProgramme(tmp))
+            pile.empiler(new LitteraleProgramme(tmp));
+        else if (LitteraleExpression::estLitteraleExpression(tmp))
+            pile.empiler(new LitteraleExpression(tmp));
+        else if(estLitteraleAtome(tmp)){
+            qDebug()<<"estLitteraleAtome";
+            Litterale* prog = getAtome(tmp);
+            qDebug()<<" TEST "<<prog->toString();
+            executer(prog->toString());
+            delete prog;
+        }
+        else
+            qDebug()<<"not found";
+
+
+    }
+
 }
 
 void Manager::insererProgramme(QString id, QString str){
@@ -73,4 +91,14 @@ void Manager::insererProgramme(QString id, QString str){
 void Manager::supprimerProgramme(QString id){
     mapProgramme->remove(id);
     stringListProgrammes->removeOne(id);
+}
+
+bool Manager::estLitteraleAtome(QString input) const{
+    return (mapProgramme->contains(input));
+}
+
+Litterale* Manager::getAtome(QString input){
+    LitteraleProgramme* prog = new LitteraleProgramme(mapProgramme->value(input));
+    qDebug()<<prog->toString();
+    return prog;
 }

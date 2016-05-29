@@ -1,4 +1,5 @@
 #include "litteraleexpression.h"
+#include "litteralenumerique.h"
 #include "litteraleentiere.h"
 #include "litteralereelle.h"
 #include <QDebug>
@@ -52,8 +53,8 @@ Litterale* LitteraleExpression::evaluerRec(QString exp){
         }
     }
     if(indexPlus!=-1 && okDebut && okFin){
-        Litterale *gauche=evaluerRec(exp.left(exp.indexOf("+")));
-        Litterale *droite = evaluerRec(exp.right(exp.length()-exp.indexOf("+")-1));
+        LitteraleNumerique *gauche=dynamic_cast<LitteraleNumerique*>(evaluerRec(exp.left(exp.indexOf("+"))));
+        LitteraleNumerique *droite = dynamic_cast<LitteraleNumerique*>(evaluerRec(exp.right(exp.length()-exp.indexOf("+")-1)));
         Litterale *newLit = *gauche+*droite;
 
         qDebug()<<newLit->toString();
@@ -64,8 +65,8 @@ Litterale* LitteraleExpression::evaluerRec(QString exp){
         return newLit;
     }
     else if(exp.contains('*')){
-        Litterale *gauche=evaluerRec(exp.left(exp.indexOf("*")));
-        Litterale *droite = evaluerRec(exp.right(exp.length()-exp.indexOf("*")-1));
+        LitteraleNumerique *gauche=dynamic_cast<LitteraleNumerique*> (evaluerRec(exp.left(exp.indexOf("*"))));
+        LitteraleNumerique *droite = dynamic_cast<LitteraleNumerique*>(evaluerRec(exp.right(exp.length()-exp.indexOf("*")-1)));
         Litterale *newLit = *gauche*(*droite);
 
         qDebug()<<newLit->toString();
@@ -77,8 +78,8 @@ Litterale* LitteraleExpression::evaluerRec(QString exp){
     }
 
     else if(exp.contains('/')){
-        Litterale *gauche=evaluerRec(exp.left(exp.indexOf("/")));
-        Litterale *droite = evaluerRec(exp.right(exp.length()-exp.indexOf("/")-1));
+        LitteraleNumerique *gauche=dynamic_cast<LitteraleNumerique*>(evaluerRec(exp.left(exp.indexOf("/"))));
+        LitteraleNumerique *droite = dynamic_cast<LitteraleNumerique*>(evaluerRec(exp.right(exp.length()-exp.indexOf("/")-1)));
         Litterale *newLit = *gauche/ *droite;
         //Litterale *newLit = *droite/(*gauche);
         qDebug()<<"coucou"<<newLit->toString();

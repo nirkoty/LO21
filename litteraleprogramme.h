@@ -13,14 +13,13 @@ public:
     LitteraleProgramme(QString programme);
     bool static estLitteraleProgramme(QString bloc);
     QString toString();
-    Litterale* operator+(Litterale& lit2){}
-    Litterale* operator*(Litterale& lit2){}
-    Litterale* operator/(Litterale& lit2){}
-    Litterale* operator-(Litterale& lit2){}
+    QString getStrProgramme();
+
 
 private:
     std::vector<Operande*> operandes;
     int nbOperandes;
+    QString programme;
 
 };
 

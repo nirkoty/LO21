@@ -1,9 +1,9 @@
 #ifndef LITTERALEREELLE_H
 #define LITTERALEREELLE_H
 
-#include "litterale.h"
+#include "litteralenumerique.h"
 
-class LitteraleReelle : public Litterale
+class LitteraleReelle : public LitteraleNumerique
 {
 public:
     LitteraleReelle(int s, double val);

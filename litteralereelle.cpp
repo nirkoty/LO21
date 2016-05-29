@@ -2,7 +2,7 @@
 #include "litteraleentiere.h"
 #include <QtDebug>
 
-LitteraleReelle::LitteraleReelle(int s, double val) : Litterale(s), valeur(val)
+LitteraleReelle::LitteraleReelle(int s, double val) : LitteraleNumerique(s), valeur(val)
 {
 
 }

@@ -3,9 +3,9 @@
 
 
 #include "litteralereelle.h"
-#include "litterale.h"
+#include "litteralenumerique.h"
 
-class LitteraleComplexe : public Litterale
+class LitteraleComplexe : public LitteraleNumerique
 {
 public:
     LitteraleComplexe(int s, LitteraleReelle re, LitteraleReelle im);

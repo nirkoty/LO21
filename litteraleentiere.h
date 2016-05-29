@@ -2,9 +2,9 @@
 #define LITTERALEENTIERE_H
 
 #include "QString"
-#include "litterale.h"
+#include "litteralenumerique.h"
 
-class LitteraleEntiere :  public Litterale
+class LitteraleEntiere :  public LitteraleNumerique
 {
 public:
     LitteraleEntiere();

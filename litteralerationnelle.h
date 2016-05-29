@@ -1,10 +1,10 @@
 #ifndef LITTERALERATIONNELLE_H
 #define LITTERALERATIONNELLE_H
 
-#include "litterale.h"
+#include "litteralenumerique.h"
 #include "litteraleentiere.h"
 
-class LitteraleRationnelle : public Litterale
+class LitteraleRationnelle : public LitteraleNumerique
 {
 public:
     LitteraleRationnelle(int s, LitteraleEntiere nom, LitteraleEntiere denom);

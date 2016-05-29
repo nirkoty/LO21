@@ -5,7 +5,7 @@
 #include <typeinfo>
 #include <QDebug>
 
-LitteraleEntiere::LitteraleEntiere(int s, int val) : Litterale(s), valeur(val)
+LitteraleEntiere::LitteraleEntiere(int s, int val) : LitteraleNumerique(s), valeur(val)
 {
 
 }
