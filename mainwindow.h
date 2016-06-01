@@ -46,7 +46,7 @@ public slots :
     void modifierProgramme();
     void effacerChampsProgramme();
     void ecrireFichierProgramme();
-
+    void returnPressedStr();
 
 };
 

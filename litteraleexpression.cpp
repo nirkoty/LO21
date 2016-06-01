@@ -101,3 +101,7 @@ Litterale* LitteraleExpression::evaluerRec(QString exp){
 
 
 }
+
+QString LitteraleExpression::toStringAvecGuillemets(){
+    return QString("'"+expression+"'");
+}

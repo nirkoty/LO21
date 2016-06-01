@@ -1,5 +1,7 @@
 ﻿#include "manager.h"
 #include "litteraleexpression.h"
+#include "litteralecomplexe.h"
+#include "litteralerationnelle.h"
 #include <typeinfo>
 
 Manager::Manager(Pile &p) : pile(p), mapProgramme(new QMap<QString, QString>), stringListProgrammes(new QStringList)
@@ -9,7 +11,7 @@ Manager::Manager(Pile &p) : pile(p), mapProgramme(new QMap<QString, QString>), s
 
 bool Manager::interpreter(QString input){
 
-   if(input.right(1)=="+" || input.right(1)=="-" || input.right(1)=="*" || input.right(1)=="/" || input.right(1)=="$"){
+   if(input.right(1)=="+" || input.right(1)=="-" || input.right(1)=="*" ||  input.right(1)=="$"){
         executer(input);
         return true;
    }
@@ -62,6 +64,9 @@ void Manager::executer(QString input){
             qDebug()<<"estUnOperateur";
             Operateur op(tmp, &pile);
             op.executer();
+        }
+        else if(LitteraleRationnelle::estLitteraleRationnelle(tmp)){
+            pile.empiler(new LitteraleRationnelle(tmp));
         }
         else if (LitteraleProgramme::estLitteraleProgramme(tmp))
             pile.empiler(new LitteraleProgramme(tmp));

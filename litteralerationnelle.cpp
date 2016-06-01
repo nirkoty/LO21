@@ -8,11 +8,25 @@ LitteraleRationnelle::LitteraleRationnelle(int s, LitteraleEntiere nom, Litteral
 
 }
 
+LitteraleRationnelle::LitteraleRationnelle(QString input){
+    if(input.left(1)=="-"){
+        signe=1;
+        input=input.remove(0,1);
+    }
+    QStringList reels = input.split("/");
+    qDebug()<<reels.at(0);
+    qDebug()<<reels.at(1);
+    nominateur=LitteraleEntiere(reels.at(0));
+    denominateur=LitteraleEntiere(reels.at(1));
+}
+
 
 
 QString LitteraleRationnelle::toString(){
-    QString q = "coucou";
-    return q;
+    if(signe==1)
+        return QString(nominateur.toString()+"/"+denominateur.toString());
+    else
+        return QString("-"+nominateur.toString()+"/"+denominateur.toString());
  }
 
 

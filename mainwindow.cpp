@@ -78,6 +78,7 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
     tabWidget->addTab(tab1, "Principal");
 
     QObject::connect(inputLine, SIGNAL(textChanged(QString)), this, SLOT(interpreter(QString))) ;
+    QObject::connect(inputLine,SIGNAL(returnPressed()), this, SLOT(returnPressedStr()));
 
     pile.setView(vuePile);
 
@@ -301,3 +302,11 @@ void MainWindow::ecrireFichierProgramme(){
     zoneIdentifiant->clear();
     zoneProgramme->clear();
 }
+
+
+
+void MainWindow::returnPressedStr(){
+    manager->executer(inputLine->text());
+    inputLine->clear();
+}
+

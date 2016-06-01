@@ -2,12 +2,22 @@
 #include "litteralerationnelle.h"
 #include "litteralereelle.h"
 #include "litteraleentiere.h"
+#include "QStringList"
 
-LitteraleComplexe::LitteraleComplexe(int s, LitteraleReelle re, LitteraleReelle im) : LitteraleNumerique(s), partieRelle(im), partieImaginaire(im)
+LitteraleComplexe::LitteraleComplexe(int s, LitteraleEntiere re, LitteraleEntiere im) : LitteraleNumerique(s), partieRelle(re), partieImaginaire(im)
 {
 
 }
 
+LitteraleComplexe::LitteraleComplexe(QString input){
+    if(input.left(1)=="-"){
+        signe=-1;
+        input=input.remove(0,1);
+    }
+    QStringList elements = input.split("$");
+    partieRelle= LitteraleEntiere(elements.at(0));
+    partieImaginaire = LitteraleEntiere(elements.at(1));
+}
 
 bool LitteraleComplexe::estLitteraleComplexe(QString bloc){
     if(bloc.indexOf('$')==-1)
@@ -27,6 +37,8 @@ bool LitteraleComplexe::estLitteraleComplexe(QString bloc){
 
 
 QString LitteraleComplexe::toString(){
-    QString q = "coucou";
-    return q;
+    if(signe==1)
+        return(partieRelle.toString()+"+"+partieImaginaire.toString()+"i");
+    else
+        return("-"+partieRelle.toString()+"+"+partieImaginaire.toString()+"i");
 }

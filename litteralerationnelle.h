@@ -8,6 +8,7 @@ class LitteraleRationnelle : public LitteraleNumerique
 {
 public:
     LitteraleRationnelle(int s, LitteraleEntiere nom, LitteraleEntiere denom);
+    LitteraleRationnelle(QString input);
     LitteraleEntiere getNominateur(){return nominateur;}
     LitteraleEntiere getDenominateur(){return denominateur;}
     QString toString();

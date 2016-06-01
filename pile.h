@@ -17,6 +17,7 @@ public:
     void setView(QListView* viewPile);
     Litterale* depiler();
     int taille() const {return vecteur.size();}
+    void dupliquer();
 
 private:
     std::vector<Litterale*>vecteur;

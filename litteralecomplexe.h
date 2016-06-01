@@ -4,13 +4,15 @@
 
 #include "litteralereelle.h"
 #include "litteralenumerique.h"
+#include "litteraleentiere.h"
 
 class LitteraleComplexe : public LitteraleNumerique
 {
 public:
-    LitteraleComplexe(int s, LitteraleReelle re, LitteraleReelle im);
-    LitteraleReelle getReelle() const {return partieRelle;}
-    LitteraleReelle getImaginaire() const {return partieImaginaire;}
+    LitteraleComplexe(int s, LitteraleEntiere re, LitteraleEntiere im);
+    LitteraleComplexe(QString input);
+    LitteraleEntiere getReelle() const {return partieRelle;}
+    LitteraleEntiere getImaginaire() const {return partieImaginaire;}
     QString toString();
     static bool estLitteraleComplexe(QString bloc);
     Litterale* operator+(Litterale& lit2){}
@@ -19,8 +21,8 @@ public:
     Litterale* operator-(Litterale& lit2){}
 
 private :
-    LitteraleReelle partieRelle;
-    LitteraleReelle partieImaginaire;
+    LitteraleEntiere partieRelle;
+    LitteraleEntiere partieImaginaire;
 };
 
 #endif // LITTERALECOMPLEXE_H

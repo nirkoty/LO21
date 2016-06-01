@@ -1,9 +1,10 @@
 #include "operateur.h"
 #include "litteralenumerique.h"
+#include "litteralecomplexe.h"
 
 Operateur::Operateur(QString op, Pile *p) : type(op), pile(p)
 {
-    if(type=="+" || type=="-" || type=="*" || type=="/")
+    if(type=="+" || type=="-" || type=="*" || type=="/" || type=="$")
         arite=2;
     if(type=="NEG")
         arite=1;
@@ -11,7 +12,7 @@ Operateur::Operateur(QString op, Pile *p) : type(op), pile(p)
 
 
 bool Operateur::estOperateur(QString type){
-    return (type=="+" || type=="-" || type=="*" || type=="/" || type=="NEG");
+    return (type=="+" || type=="-" || type=="*" || type=="/" || type=="$");
 }
 
 void Operateur::executer(){
@@ -32,6 +33,11 @@ void Operateur::executer(){
         newLit = *litterales.at(0)-*litterales.at(1);
     else if(type=="/")
         newLit = *litterales.at(0)/(*litterales.at(1));
+    else if(type=="$"){
+        LitteraleEntiere *lit1 = dynamic_cast<LitteraleEntiere*> (litterales.at(0));
+        LitteraleEntiere *lit2 = dynamic_cast<LitteraleEntiere*> (litterales.at(1));
+        newLit = new LitteraleComplexe(1, *lit2, *lit1);
+    }
 
     else if(type=="NEG"){
         //newLit =

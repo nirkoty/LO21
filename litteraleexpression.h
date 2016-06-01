@@ -13,6 +13,7 @@ public:
     LitteraleExpression(QString exp);
     static bool estLitteraleExpression(QString exp);
     QString toString() {return expression;}
+    QString toStringAvecGuillemets();
     Litterale* evaluer();
     Litterale* evaluerRec(QString exp);
 
