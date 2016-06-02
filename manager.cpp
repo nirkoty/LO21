@@ -167,11 +167,7 @@ void Manager::operer(QString op){
 
 
     if(op!="DUP" && op!="DROP" && op!="SWAP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTOP"){
-     qDebug()<<"testDelete"<<op<<getArite(op);
      pile.empiler(newLit);
-        for(unsigned int i=0; i<getArite(op); i++){
-             delete litterales.at(i);
-        }
     }
 
 }
