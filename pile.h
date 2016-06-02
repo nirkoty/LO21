@@ -9,6 +9,7 @@
 #include <QListView>
 #include <QStringListModel>
 
+
 class Pile
 {
 public:
@@ -18,11 +19,24 @@ public:
     Litterale* depiler();
     int taille() const {return vecteur.size();}
     void dupliquer();
+    void swap();
+    void clear();
+    void savePile();
+    void undo();
+    void redo();
+    void afficherPile();
+    void empilerLastArgs();
+    void setLastArgs(std::vector<Litterale*> args);
+
 
 private:
     std::vector<Litterale*>vecteur;
+    std::vector<std::vector<Litterale*> > savedStates;
+    std::vector<Litterale*> lastArgs;
+    int indicePiles;
     QListView* view;
     QStringListModel *modeleProgrammes;
+
 
 };
 

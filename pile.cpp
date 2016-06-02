@@ -7,28 +7,22 @@
 #include "litteraleprogramme.h"
 #include "litteraleexpression.h"
 
-Pile::Pile() : modeleProgrammes(new QStringListModel)
+Pile::Pile() : modeleProgrammes(new QStringListModel), indicePiles(0)
 {
-
+    savedStates.push_back(vecteur);
 }
 
 
 void Pile::empiler(Litterale *lit){
 
+    qDebug()<<"empiler";
     vecteur.push_back(lit);
-    qDebug()<<"test";
-    //qDebug()<<typeid(*lit).name();
-
-    //LitteraleEntiere* t = dynamic_cast<LitteraleEntiere*> (lit);
-
-    //qDebug()<<lit;
-    //qDebug()<<typeid(*t).name();
-    //qDebug()<<t->getValeur();
-    qDebug()<<lit->toString();
 
     modeleProgrammes->insertRow(modeleProgrammes->rowCount());
     QModelIndex index = modeleProgrammes->index(modeleProgrammes->rowCount()-1);
     modeleProgrammes->setData(index, lit->toString());
+    qDebug()<<"empiler2 "<<taille();
+    savePile();
 
 }
 
@@ -48,6 +42,8 @@ Litterale* Pile::depiler(){
 
 void Pile::dupliquer(){
     Litterale* last = vecteur.at(vecteur.size()-1);
+
+    qDebug()<<last->toString();
 
     if(dynamic_cast<LitteraleEntiere*>(last)){
         LitteraleEntiere* dup= dynamic_cast<LitteraleEntiere*>(last);
@@ -74,4 +70,79 @@ void Pile::dupliquer(){
         empiler(new LitteraleExpression(dup->toString()));
     }
 
+}
+
+
+void Pile::swap(){
+    Litterale* lit1 = depiler();
+    Litterale* lit2 = depiler();
+    empiler(lit1);
+    empiler(lit2);
+}
+
+void Pile::clear(){
+    while(vecteur.size()>0){
+        delete depiler();
+    }
+}
+
+void Pile::savePile(){
+    qDebug()<<indicePiles;
+    if(indicePiles<savedStates.size()-1){
+        unsigned int taille=savedStates.size();
+        for(unsigned int i=indicePiles+1 ; i<taille; i++){
+            qDebug()<<"pop_back";
+            savedStates.pop_back();
+        }
+    }
+
+
+
+    savedStates.push_back(vecteur);
+    indicePiles++;
+      qDebug()<<indicePiles<<"   "<<savedStates.size();
+    qDebug()<<"taille save "<<savedStates.size();
+}
+
+void Pile::undo(){
+    qDebug()<<"indicepiles  "<<indicePiles;
+    vecteur = savedStates.at(--indicePiles);
+    qDebug()<<"taille undo "<<vecteur.size();
+    afficherPile();
+
+}
+
+void Pile::redo(){
+    vecteur = savedStates.at(++indicePiles);
+    qDebug()<<"taille redo "<<vecteur.size();
+    afficherPile();
+}
+
+void Pile::afficherPile(){
+
+    delete modeleProgrammes;
+    modeleProgrammes = new QStringListModel();
+    Litterale* tmp;
+
+    for(int i=0; i<vecteur.size(); i++){
+        tmp = vecteur.at(i);
+        modeleProgrammes->insertRow(modeleProgrammes->rowCount());
+        QModelIndex index = modeleProgrammes->index(modeleProgrammes->rowCount()-1);
+        modeleProgrammes->setData(index, tmp->toString());
+    }
+
+    view->setModel(modeleProgrammes);
+
+}
+
+void Pile::empilerLastArgs(){
+    for(unsigned int i=0; i<lastArgs.size(); i++)
+    {
+        empiler(lastArgs.at(i));
+    }
+    savePile();
+}
+
+void Pile::setLastArgs(std::vector<Litterale *> args){
+    lastArgs=args;
 }

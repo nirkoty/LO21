@@ -14,6 +14,7 @@ public:
     bool static estLitteraleProgramme(QString bloc);
     QString toString();
     QString getStrProgramme();
+    Litterale* evaluer();
 
 
 private:

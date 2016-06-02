@@ -8,6 +8,7 @@
 #include "litteralereelle.h"
 #include "pile.h"
 #include <vector>
+
 #include "operateur.h"
 #include <QDebug>
 #include <QObject>
@@ -26,11 +27,16 @@ public:
     void supprimerProgramme(QString id);
     bool estLitteraleAtome(QString input) const;
     Litterale* getAtome(QString input);
+    void operer(QString op);
+    int getArite(QString op);
+    static bool estUnOperateur(QString op);
 
 private:
     Pile& pile;
     QMap<QString, QString>* mapProgramme;
     QStringList *stringListProgrammes;
+    QString lastOp;
+
 
 
 };
