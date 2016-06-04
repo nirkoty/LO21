@@ -19,9 +19,5 @@ int main(int argc, char *argv[])
     MainWindow w(pile, manager);
     w.show();
 
-
-     //qDebug()<<LitteraleReelle::estLitteraleReelle("63.");
-    //qDebug()<<LitteraleComplexe::estLitteraleComplexe("2$2.2");
-
     return a.exec();
 }

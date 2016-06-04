@@ -31,12 +31,22 @@ private:
     QLineEdit *inputLine;
     QTextEdit *zoneProgramme;
     QLineEdit *zoneIdentifiant;
+    QTextEdit *zoneVariable;
+    QLineEdit *zoneIdentifiantVariable;
     QListView* listeProgrammes;
+    QListView* listeVariables;
     QStringListModel *modeleProgrammes;
+    QStringListModel *modeleVariables;
     QPushButton *boutonValider;
     QPushButton *boutonEffacer;
     QPushButton *boutonSupprimer;
     QPushButton *boutonModifier;
+    QPushButton *boutonValiderVariable;
+    QPushButton *boutonEffacerVariable;
+    QPushButton *boutonSupprimerVariable;
+    QPushButton *boutonModifierVariable;
+    QTabWidget *tabWidget;
+
 
 public slots :
     void interpreter(QString exp);
@@ -45,7 +55,16 @@ public slots :
     void afficherProgrammeListe(QModelIndex modelIndex);
     void modifierProgramme();
     void effacerChampsProgramme();
-    void ecrireFichierProgramme();
+    void updateTab(int index);
+
+
+    void ajouterVariable();
+    void supprimerVariable();
+    void afficherVariableListe(QModelIndex modelIndex);
+    void modifierVariable();
+    void effacerChampsVariable();
+
+
     void returnPressedStr();
 
 };

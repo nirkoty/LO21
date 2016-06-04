@@ -18,7 +18,7 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
 
     // Général
     QHBoxLayout *mainLayout= new QHBoxLayout();
-    QTabWidget *tabWidget = new QTabWidget();
+    tabWidget = new QTabWidget();
     QVBoxLayout *verticalLayout = new QVBoxLayout();
     QGridLayout *layoutClavier = new QGridLayout;
 
@@ -69,10 +69,6 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
     //Assemble les layouts
     mainLayout->addWidget(vuePile);
     mainLayout->addLayout(verticalLayout);
-
-
-    //QWidget *zoneCentrale = new QWidget;
-    //zoneCentrale->setLayout(mainLayout);
 
 
     QWidget* tab1 = new QWidget();
@@ -182,6 +178,99 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
    QObject::connect(boutonModifier, SIGNAL(clicked(bool)), this, SLOT(modifierProgramme()));
 
 
+
+
+   //---------------------------------TAB3--------------------------------------------
+
+
+   QHBoxLayout *layoutVariable = new QHBoxLayout();
+   QVBoxLayout *layoutEditionVariable = new QVBoxLayout();
+   QHBoxLayout *layoutBoutonsVariable = new QHBoxLayout();
+
+   listeVariables = new QListView();
+
+   zoneVariable = new QTextEdit();
+   zoneIdentifiantVariable = new QLineEdit();
+   boutonValiderVariable = new QPushButton("Ajouter");
+   boutonEffacerVariable = new QPushButton("Effacer");
+   boutonModifierVariable = new QPushButton("Modifier");
+   boutonSupprimerVariable = new QPushButton("Supprimer");
+   boutonSupprimerVariable->setEnabled(false);
+   boutonModifierVariable->setEnabled(false);
+
+
+
+  layoutBoutonsVariable->addWidget(boutonValiderVariable);
+  layoutBoutonsVariable->addWidget(boutonEffacerVariable);
+  layoutBoutonsVariable->addWidget(boutonModifierVariable);
+  layoutBoutonsVariable->addWidget(boutonSupprimerVariable);
+
+
+  layoutEditionVariable->addWidget(zoneVariable);
+  layoutEditionVariable->addWidget(zoneIdentifiantVariable);
+  layoutEditionVariable->addLayout(layoutBoutonsVariable);
+
+  layoutVariable->addLayout(layoutEditionVariable);
+  layoutVariable->addWidget(listeVariables);
+
+  QWidget* tab3 = new QWidget();
+
+  tab3->setLayout(layoutVariable);
+
+  tabWidget->addTab(tab3, "Variables");
+
+
+
+  QXmlStreamReader xmlReader2;
+  QFile fileVariable("variables.xml");
+  fileVariable.open(QFile::ReadOnly);
+  xmlReader2.setDevice(&fileVariable);
+
+
+
+  xmlReader2.readNext();
+
+  while(!xmlReader2.atEnd() && !xmlReader2.hasError()) {
+
+          QXmlStreamReader::TokenType token = xmlReader2.readNext();
+
+          if(token == QXmlStreamReader::StartDocument) {
+                  continue;
+          }
+
+          if(token == QXmlStreamReader::StartElement) {
+
+                  if(xmlReader2.name() == "identifiant") {
+                          strIdentifiant= xmlReader2.readElementText();
+                  }
+
+                  if(xmlReader2.name() == "string") {
+                       str= xmlReader2.readElementText();
+                       manager->insererVariable(strIdentifiant, str);
+                  }
+          }
+  }
+
+  QStringList* listeVariablesStr = manager->getListVariables();
+
+  modeleVariables = new QStringListModel(*listeVariablesStr, this);
+
+  listeVariables->setEditTriggers(QAbstractItemView::NoEditTriggers);
+  listeVariables->setModel(modeleVariables);
+
+
+
+  fileVariable.close();
+
+  QObject::connect(boutonValiderVariable, SIGNAL(clicked(bool)), this, SLOT(ajouterVariable()));
+  QObject::connect(listeVariables, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(afficherVariableListe(QModelIndex)));
+  QObject::connect(boutonEffacerVariable, SIGNAL(clicked(bool)), this, SLOT(effacerChampsVariable()));
+  QObject::connect(boutonSupprimerVariable, SIGNAL(clicked(bool)), this, SLOT(supprimerVariable()));
+  QObject::connect(boutonModifierVariable, SIGNAL(clicked(bool)), this, SLOT(modifierVariable()));
+
+  QObject::connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(updateTab(int)));
+
+
    setCentralWidget(tabWidget);
 
 
@@ -220,7 +309,7 @@ void MainWindow::ajouterProgramme(){
 
 
 
-        ecrireFichierProgramme();
+        manager->ecrireFichierProgramme(mapProgramme, zoneIdentifiant, zoneProgramme);
 
     }
     else{
@@ -249,7 +338,7 @@ void MainWindow::modifierProgramme(){
     mapProgramme->remove(zoneIdentifiant->text());
     manager->insererProgramme(zoneIdentifiant->text(), zoneProgramme->toPlainText());
 
-    ecrireFichierProgramme();
+    manager->ecrireFichierProgramme(mapProgramme, zoneIdentifiant, zoneProgramme);
 }
 
 
@@ -262,7 +351,7 @@ void MainWindow::supprimerProgramme(){
     int indexToDelete = programmesStr.indexOf(zoneIdentifiant->text());
     modeleProgrammes->removeRow(indexToDelete);
 
-    ecrireFichierProgramme();
+    manager->ecrireFichierProgramme(mapProgramme, zoneIdentifiant, zoneProgramme);
 
 }
 
@@ -272,38 +361,78 @@ void MainWindow::effacerChampsProgramme(){
     boutonSupprimer->setDisabled(true);
 }
 
-void MainWindow::ecrireFichierProgramme(){
 
 
-    QMap<QString, QString>* mapProgramme=manager->getMapProgramme();
-    QMapIterator<QString, QString> it(*mapProgramme);
+void MainWindow::ajouterVariable(){
 
-    QString path("programmes.xml");
-    QFile file(path);
-    file.open(QFile::WriteOnly);
-    QXmlStreamWriter xmlWriter(&file);
-    xmlWriter.setAutoFormatting(true);
-    xmlWriter.setAutoFormattingIndent(2);
-    xmlWriter.writeStartDocument();
+    QMap<QString, QString>* mapVariable=manager->getMapVariables();
+    QMapIterator<QString, QString> it(*mapVariable);
 
 
+    if(zoneIdentifiantVariable->text()!="" && !mapVariable->contains(zoneIdentifiantVariable->text())){
+
+        manager->insererVariable(zoneIdentifiantVariable->text(), zoneVariable->toPlainText());
 
 
-    xmlWriter.writeStartElement("programmes");
-    while(it.hasNext()){
+        modeleVariables->insertRow(modeleVariables->rowCount());
+        QModelIndex index = modeleVariables->index(modeleVariables->rowCount()-1);
+        modeleVariables->setData(index, zoneIdentifiantVariable->text());
 
-        it.next();
-        xmlWriter.writeStartElement("programme");
-        xmlWriter.writeTextElement("identifiant",it.key());
-        xmlWriter.writeTextElement("string", it.value());
-        xmlWriter.writeEndElement();
+
+
+        manager->ecrireFichierVariable(mapVariable, zoneIdentifiantVariable, zoneVariable );
+
     }
+    else{
+        qDebug()<<"erreur ajout";
+        QMessageBox boiteErreur;
+        boiteErreur.setText("Une variable à ce nom existe déja");
+        boiteErreur.exec();
+    }
+ }
 
-    xmlWriter.writeEndElement();
-    xmlWriter.writeEndDocument();
-    zoneIdentifiant->clear();
-    zoneProgramme->clear();
+
+
+void MainWindow::afficherVariableListe(QModelIndex modelIndex){
+
+    boutonSupprimerVariable->setEnabled(true);
+    boutonModifierVariable->setEnabled(true);
+    QMap<QString, QString>* mapVariable=manager->getMapVariables();
+    zoneVariable->setText(mapVariable->value(manager->getListVariables()->at(modelIndex.row())));
+    zoneIdentifiantVariable->setText(manager->getListVariables()->at(modelIndex.row()));
+
 }
+
+
+void MainWindow::modifierVariable(){
+    QMap<QString, QString>* mapVariable=manager->getMapVariables();
+    mapVariable->remove(zoneIdentifiantVariable->text());
+    manager->insererVariable(zoneIdentifiantVariable->text(), zoneVariable->toPlainText());
+
+    manager->ecrireFichierVariable(mapVariable, zoneIdentifiantVariable, zoneVariable );
+}
+
+
+void MainWindow::supprimerVariable(){
+    boutonSupprimerVariable->setEnabled(false);
+    boutonModifierVariable->setEnabled(false);
+    QMap<QString, QString>* mapVariable=manager->getMapVariables();
+    mapVariable->remove(zoneIdentifiantVariable->text());
+    QStringList programmesStr= modeleVariables->stringList();
+    int indexToDelete = programmesStr.indexOf(zoneIdentifiantVariable->text());
+    modeleVariables->removeRow(indexToDelete);
+
+    manager->ecrireFichierVariable(mapVariable, zoneIdentifiantVariable, zoneVariable );
+
+}
+
+void MainWindow::effacerChampsVariable(){
+    zoneVariable->clear();
+    zoneIdentifiantVariable->clear();
+    boutonSupprimerVariable->setDisabled(true);
+}
+
+
 
 
 
@@ -312,3 +441,20 @@ void MainWindow::returnPressedStr(){
     inputLine->clear();
 }
 
+void MainWindow::updateTab(int index){
+    if(index==1){
+        delete modeleProgrammes;
+        QStringList* listeProgrammesStr = manager->getListProgrammes();
+        modeleProgrammes = new QStringListModel(*listeProgrammesStr, this);
+        listeProgrammes->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        listeProgrammes->setModel(modeleProgrammes);
+    }
+    else if(index==2){
+        delete modeleVariables;
+        QStringList* listeVariablesStr = manager->getListVariables();
+        modeleVariables = new QStringListModel(*listeVariablesStr, this);
+        listeVariables->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        listeVariables->setModel(modeleVariables);
+    }
+
+}

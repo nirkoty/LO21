@@ -2,9 +2,10 @@
 #include "litteraleexpression.h"
 #include "litteralecomplexe.h"
 #include "litteralerationnelle.h"
+#include <QLineEdit>
 #include <typeinfo>
 
-Manager::Manager(Pile &p) : pile(p), mapProgramme(new QMap<QString, QString>), stringListProgrammes(new QStringList)
+Manager::Manager(Pile &p) : pile(p), mapProgramme(new QMap<QString, QString>), mapVariable(new QMap<QString, QString>), stringListProgrammes(new QStringList),  stringListVariables(new QStringList)
 {
 }
 
@@ -19,30 +20,6 @@ bool Manager::interpreter(QString input){
 
 }
 
-/*void Manager::executer(Operateur operateur){
-    std::vector<Litterale*> litterales;
-    qDebug()<<pile.taille();
-    for(unsigned int i=0; i<operateur.getArite(); i++){
-        litterales.push_back(pile.depiler());
-    }
-
-    Litterale* newLit;
-
-
-    if(operateur.getType()=="+")
-        newLit = *litterales.at(0)+*litterales.at(1);
-    else if(operateur.getType()=="*")
-        newLit = *litterales.at(0)*(*litterales.at(1));
-    else if(operateur.getType()=="-")
-        newLit = *litterales.at(0)-*litterales.at(1);
-    else if(operateur.getType()=="/")
-        newLit = *litterales.at(0)/(*litterales.at(1));
-
-    pile.empiler(newLit);
-
-    delete litterales.at(0);
-    delete litterales.at(1);
-}*/
 
 void Manager::executer(QString input){
 
@@ -160,9 +137,24 @@ void Manager::operer(QString op){
         else if(op=="LASTARGS"){
             pile.empilerLastArgs();
         }
+        else if(op=="STO"){
+            if(LitteraleProgramme::estLitteraleProgramme(litterales.at(0)->toString())){
+                Litterale* lit1=litterales.at(1);
+                Litterale* lit0=litterales.at(0);
+                insererProgramme(lit0->toString(), lit1->toString());
+                ecrireFichierProgramme(mapProgramme);
+            }
+            else{
+                Litterale* lit1=litterales.at(1);
+                Litterale* lit0=litterales.at(0);
+                insererVariable(lit0->toString(), lit1->toString());
+                ecrireFichierVariable(mapVariable);
+            }
+
+        }
 
 
-        if(op!="DUP" && op!="DROP" && op!="SWAP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTOP"  && op!="LASTARGS"){
+        if(op!="DUP" && op!="DROP" && op!="SWAP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTOP"  && op!="LASTARGS" && op!="STO"){
          pile.empiler(newLit);
         }
     }
@@ -175,7 +167,7 @@ void Manager::operer(QString op){
 
 
 int Manager::getArite(QString op){
-    if(op=="+" || op=="-" || op=="*" || op=="/" || op=="$")
+    if(op=="+" || op=="-" || op=="*" || op=="/" || op=="$" || op=="STO")
         return 2;
     if(op=="NEG" || op=="DUP" || op=="DROP")
         return 1;
@@ -185,7 +177,7 @@ int Manager::getArite(QString op){
 
 bool Manager::estUnOperateur(QString op){
     return (op=="+" || op=="-" || op=="*" || op=="/" || op=="$" || op=="DUP" || op=="DROP" || op=="SWAP" || op=="LASTOP"
-            || op=="CLEAR" || op=="UNDO" || op=="REDO" || op=="LASTARGS");
+            || op=="CLEAR" || op=="UNDO" || op=="REDO" || op=="LASTARGS" || op=="STO");
 }
 
 
@@ -200,12 +192,106 @@ void Manager::supprimerProgramme(QString id){
     stringListProgrammes->removeOne(id);
 }
 
+void Manager::insererVariable(QString id, QString str){
+    mapVariable->insert(id, str);
+    stringListVariables->append(id);
+}
+
+
+void Manager::supprimerVariable(QString id){
+    mapVariable->remove(id);
+    stringListVariables->removeOne(id);
+}
+
 bool Manager::estLitteraleAtome(QString input) const{
-    return (mapProgramme->contains(input));
+    return (mapProgramme->contains(input) || mapVariable->contains(input));
 }
 
 Litterale* Manager::getAtome(QString input){
-    LitteraleProgramme* prog = new LitteraleProgramme(mapProgramme->value(input));
-    qDebug()<<prog->toString();
-    return prog;
+    if(mapProgramme->contains(input)){
+        LitteraleProgramme* prog = new LitteraleProgramme(mapProgramme->value(input));
+        qDebug()<<prog->toString();
+        return prog;
+    }
+    else{
+        if(LitteraleReelle::estLitteraleReelle(mapVariable->value(input)))
+            return new LitteraleReelle(mapVariable->value(input));
+
+        else if (LitteraleEntiere::estLitteraleEntiere(mapVariable->value(input)))
+            return new LitteraleEntiere(mapVariable->value(input));
+
+        else if(LitteraleRationnelle::estLitteraleRationnelle(mapVariable->value(input))){
+            return new LitteraleRationnelle(mapVariable->value(input));
+        }
+
+    }
+}
+
+
+void Manager::ecrireFichierVariable(QMap<QString, QString>* mapVariable, QLineEdit *zoneIdentifiantVariable, QTextEdit *zoneVariable){
+
+
+
+    QMapIterator<QString, QString> it(*mapVariable);
+
+    QString path("variables.xml");
+    QFile file(path);
+    file.open(QFile::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.setAutoFormattingIndent(2);
+    xmlWriter.writeStartDocument();
+
+    xmlWriter.writeStartElement("variables");
+    while(it.hasNext()){
+
+        it.next();
+        xmlWriter.writeStartElement("variable");
+        xmlWriter.writeTextElement("identifiant",it.key());
+        xmlWriter.writeTextElement("string", it.value());
+        xmlWriter.writeEndElement();
+    }
+
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndDocument();
+    if(zoneIdentifiantVariable!=0){
+        zoneIdentifiantVariable->clear();
+        zoneVariable->clear();
+    }
+}
+
+void Manager::ecrireFichierProgramme(QMap<QString, QString>* mapProgramme, QLineEdit *zoneIdentifiant, QTextEdit *zoneProgramme){
+
+
+
+    QMapIterator<QString, QString> it(*mapProgramme);
+
+    QString path("programmes.xml");
+    QFile file(path);
+    file.open(QFile::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.setAutoFormattingIndent(2);
+    xmlWriter.writeStartDocument();
+
+
+
+
+    xmlWriter.writeStartElement("programmes");
+    while(it.hasNext()){
+
+        it.next();
+        xmlWriter.writeStartElement("programme");
+        xmlWriter.writeTextElement("identifiant",it.key());
+        xmlWriter.writeTextElement("string", it.value());
+        xmlWriter.writeEndElement();
+    }
+
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndDocument();
+    if(zoneIdentifiant!=0){
+        zoneIdentifiant->clear();
+        zoneProgramme->clear();
+    }
+
 }
