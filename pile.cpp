@@ -15,14 +15,12 @@ Pile::Pile() : modeleProgrammes(new QStringListModel), indicePiles(0)
 
 void Pile::empiler(Litterale *lit){
 
-    qDebug()<<"empiler";
     vecteur.push_back(lit);
 
     modeleProgrammes->insertRow(modeleProgrammes->rowCount());
     QModelIndex index = modeleProgrammes->index(modeleProgrammes->rowCount()-1);
     modeleProgrammes->setData(index, lit->toString());
-    qDebug()<<"empiler2 "<<taille();
-    savePile();
+
 
 }
 
@@ -70,6 +68,8 @@ void Pile::dupliquer(){
         empiler(new LitteraleExpression(dup->toString()));
     }
 
+
+
 }
 
 
@@ -78,43 +78,45 @@ void Pile::swap(){
     Litterale* lit2 = depiler();
     empiler(lit1);
     empiler(lit2);
+
+
 }
 
 void Pile::clear(){
     while(vecteur.size()>0){
         delete depiler();
     }
+
 }
 
 void Pile::savePile(){
-    qDebug()<<indicePiles;
+
     if(indicePiles<savedStates.size()-1){
         unsigned int taille=savedStates.size();
         for(unsigned int i=indicePiles+1 ; i<taille; i++){
-            qDebug()<<"pop_back";
             savedStates.pop_back();
         }
     }
 
-
-
     savedStates.push_back(vecteur);
+    qDebug()<<"savePiles";
     indicePiles++;
-      qDebug()<<indicePiles<<"   "<<savedStates.size();
-    qDebug()<<"taille save "<<savedStates.size();
+
+
 }
 
 void Pile::undo(){
-    qDebug()<<"indicepiles  "<<indicePiles;
+
+    qDebug()<<"indicePiles"<<indicePiles;
     vecteur = savedStates.at(--indicePiles);
-    qDebug()<<"taille undo "<<vecteur.size();
+qDebug()<<"indicePiles2"<<indicePiles;
     afficherPile();
 
 }
 
 void Pile::redo(){
     vecteur = savedStates.at(++indicePiles);
-    qDebug()<<"taille redo "<<vecteur.size();
+
     afficherPile();
 }
 
@@ -136,13 +138,30 @@ void Pile::afficherPile(){
 }
 
 void Pile::empilerLastArgs(){
+
+
     for(unsigned int i=0; i<lastArgs.size(); i++)
     {
-        empiler(lastArgs.at(i));
+
+        if(LitteraleEntiere::estLitteraleEntiere(lastArgs.at(i)))
+            empiler(new LitteraleEntiere(lastArgs.at(i)));
+
+        if(LitteraleReelle::estLitteraleReelle(lastArgs.at(i)))
+            empiler(new LitteraleReelle(lastArgs.at(i)));
+
+        if(LitteraleRationnelle::estLitteraleRationnelle(lastArgs.at(i)))
+            empiler(new LitteraleRationnelle(lastArgs.at(i)));
+
+        if(LitteraleComplexe::estLitteraleComplexe(lastArgs.at(i)))
+            empiler(new LitteraleComplexe(lastArgs.at(i)));
+
+        if(LitteraleExpression::estLitteraleExpression(lastArgs.at(i)))
+            empiler(new LitteraleExpression(lastArgs.at(i)));
+        if(LitteraleProgramme::estLitteraleProgramme(lastArgs.at(i)))
+            empiler(new LitteraleProgramme(lastArgs.at(i)));
     }
-    savePile();
 }
 
-void Pile::setLastArgs(std::vector<Litterale *> args){
+void Pile::setLastArgs(std::vector<QString> args){
     lastArgs=args;
 }

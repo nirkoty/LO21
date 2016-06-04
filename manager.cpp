@@ -47,6 +47,7 @@ bool Manager::interpreter(QString input){
 void Manager::executer(QString input){
 
     QString tmp;
+    bool ok=true;
     while(input.length()>0){
         qDebug()<<input;
         tmp = input.left(input.indexOf(" "));
@@ -76,8 +77,12 @@ void Manager::executer(QString input){
             executer(prog->toString());
             delete prog;
         }
-        else
+        else{
             qDebug()<<"not found";
+            ok=false;
+        }
+        if(ok && tmp!="UNDO" && tmp!="REDO")
+            pile.savePile();
 
 
     }
@@ -87,91 +92,82 @@ void Manager::executer(QString input){
 
 void Manager::operer(QString op){
 
-    if(op!="LASTOP")
-        lastOp=op;
+    if((getArite(op) <= pile.taille()) || getArite(op)==-1){
+        if(op!="LASTOP")
+            lastOp=op;
 
-    qDebug()<<op;
-    std::vector<LitteraleNumerique*> litterales;
+        std::vector<Litterale*> litterales;
+        std::vector<QString> newLastArgs;
+
+        if(op !="DUP" && op!="SWAP" && op!="LASTOP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTARGS" && op!="DROP"){
+                    for(unsigned int i=0; i<getArite(op); i++){
+                        Litterale* tmp = pile.depiler();
+                        newLastArgs.push_back(tmp->toString());
+                        litterales.push_back(dynamic_cast<Litterale*> (tmp));
+                    }
+                    pile.setLastArgs(newLastArgs);
+        }
+
+        Litterale* newLit;
 
 
-    /*if(op !="DUP" && op!="SWAP" && op!="LASTOP" && op!="CLEAR" && op=="UNDO" && op=="REDO"){
-            for(unsigned int i=0; i<getArite(op); i++){
-                Litterale* tmp = pile.depiler();
 
-                if(dynamic_cast<LitteraleNumerique*> (tmp))
-                    litterales.push_back(tmp);
-                else{
+        if(op=="+")
+            newLit = *litterales.at(0)+ *litterales.at(1);
+        else if(op=="*")
+            newLit = *litterales.at(0)*(*litterales.at(1));
+        else if(op=="-"){
+            qDebug() << "Test -";
+            newLit = *litterales.at(0)-*litterales.at(1);}
+        else if(op=="/")
+            newLit = *litterales.at(0)/(*litterales.at(1));
+        else if(op=="$"){
+            LitteraleEntiere *lit1 = dynamic_cast<LitteraleEntiere*> (litterales.at(0));
+            LitteraleEntiere *lit2 = dynamic_cast<LitteraleEntiere*> (litterales.at(1));
+            newLit = new LitteraleComplexe(lit2, lit1);
+        }
+        else if(op=="NEG"){
 
-                    litterales.push_back(dynamic_cast<LitteraleNumerique*> (pile.depiler()));
-                }
+        }
+        else if(op=="DUP"){
+            pile.dupliquer();
+        }
 
-            }
+        else if(op=="DROP"){
+            pile.depiler();
+        }
+        else if(op=="SWAP"){
+            pile.swap();
 
-            pile.setLastArgs(litterales);
-    }*/
 
-    if(op !="DUP" && op!="SWAP" && op!="LASTOP" && op!="CLEAR" && op!="UNDO" && op!="REDO"){
-        qDebug()<<"IF manager"<<getArite(op);
-                for(unsigned int i=0; i<getArite(op); i++){
 
-                    litterales.push_back(dynamic_cast<LitteraleNumerique*> (pile.depiler()));
-                }
+        }
+        else if(op=="CLEAR"){
+            pile.clear();
+
+
+        }
+        else if(op=="UNDO"){
+            pile.undo();
+        }
+        else if(op=="REDO"){
+
+            pile.redo();
+        }
+        else if(op=="LASTOP"){
+            operer(lastOp);
+        }
+        else if(op=="LASTARGS"){
+            pile.empilerLastArgs();
+        }
+
+
+        if(op!="DUP" && op!="DROP" && op!="SWAP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTOP"  && op!="LASTARGS"){
+         pile.empiler(newLit);
+        }
     }
-
-    Litterale* newLit;
-
-    qDebug() << "manager operer";
-
-
-
-    if(op=="+")
-        newLit = *litterales.at(0)+ *litterales.at(1);
-    else if(op=="*")
-        newLit = *litterales.at(0)*(*litterales.at(1));
-    else if(op=="-"){
-        qDebug() << "Test -";
-        newLit = *litterales.at(0)-*litterales.at(1);}
-    else if(op=="/")
-        newLit = *litterales.at(0)/(*litterales.at(1));
-    else if(op=="$"){
-        LitteraleEntiere *lit1 = dynamic_cast<LitteraleEntiere*> (litterales.at(0));
-        LitteraleEntiere *lit2 = dynamic_cast<LitteraleEntiere*> (litterales.at(1));
-        newLit = new LitteraleComplexe(lit2, lit1);
-    }
-    else if(op=="NEG"){
-        pile.savePile();
-    }
-    else if(op=="DUP"){
-        pile.dupliquer();
-    }
-    else if(op=="SWAP"){
-        pile.swap();
-        pile.savePile();
-
-
-    }
-    else if(op=="CLEAR"){
-        pile.clear();
-        pile.savePile();
-
-    }
-    else if(op=="UNDO"){
-
-        pile.undo();
-    }
-    else if(op=="REDO"){
-
-        pile.redo();
-    }
-    else if(op=="LASTOP"){
-        qDebug()<<"OP LASTOP "<<lastOp;
-        operer(lastOp);
-    }
-    qDebug() << "juste avant ?" << newLit->toString();
-
-    if(op!="DUP" && op!="DROP" && op!="SWAP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTOP"){
-     pile.empiler(newLit);
-    }
+    else
+        qDebug()<<"Erreur execution commande";
 
 }
 
@@ -183,12 +179,13 @@ int Manager::getArite(QString op){
         return 2;
     if(op=="NEG" || op=="DUP" || op=="DROP")
         return 1;
+    return -1;
 }
 
 
 bool Manager::estUnOperateur(QString op){
     return (op=="+" || op=="-" || op=="*" || op=="/" || op=="$" || op=="DUP" || op=="DROP" || op=="SWAP" || op=="LASTOP"
-            || op=="CLEAR" || op=="UNDO" || op=="REDO");
+            || op=="CLEAR" || op=="UNDO" || op=="REDO" || op=="LASTARGS");
 }
 
 
