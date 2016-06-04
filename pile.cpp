@@ -59,7 +59,7 @@ void Pile::dupliquer(){
     }
     if(dynamic_cast<LitteraleComplexe*>(last)){
         LitteraleComplexe* dup= dynamic_cast<LitteraleComplexe*>(last);
-        empiler(new LitteraleComplexe(dup->getSigne(), dup->getReelle(), dup->getImaginaire()));
+        empiler(new LitteraleComplexe(dup->getReelle(), dup->getImaginaire()));
     }
     if(dynamic_cast<LitteraleProgramme*>(last)){
         LitteraleProgramme* dup= dynamic_cast<LitteraleProgramme*>(last);

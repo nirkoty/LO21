@@ -16,21 +16,21 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
 {
 
 
-
+    // Général
     QHBoxLayout *mainLayout= new QHBoxLayout();
+    QTabWidget *tabWidget = new QTabWidget();
+    QVBoxLayout *verticalLayout = new QVBoxLayout();
+    QGridLayout *layoutClavier = new QGridLayout;
+
+    //Vue de la pile (gauche)
     QListView *vuePile = new QListView();
     vuePile->setGeometry(0,0,100,300);
 
-    QVBoxLayout *verticalLayout = new QVBoxLayout();
+    //Vue de l'historique de commandes (droite)
     QTextEdit *vueHistoriqueCommandes = new QTextEdit();
     inputLine = new QLineEdit();
 
-    QTabWidget *tabWidget = new QTabWidget();
-
-
-    QGridLayout *layoutClavier = new QGridLayout;
-
-
+    //Clavier numérique
     QPushButton *bouton1= new QPushButton();
     bouton1->setText("1");
     QPushButton *bouton2= new QPushButton();
@@ -50,7 +50,7 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
     QPushButton *bouton9= new QPushButton();
     bouton9->setText("9");
 
-
+    //Crée un layout contenant le clavier numérique
     layoutClavier->addWidget(bouton1, 0,0);
     layoutClavier->addWidget(bouton2, 0,1);
     layoutClavier->addWidget(bouton3, 0,2);
@@ -61,17 +61,19 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
     layoutClavier->addWidget(bouton8, 2,1);
     layoutClavier->addWidget(bouton9, 2,2);
 
+    //Crée un layout avec l'historique de commandes, la zone d'entrée et le clavier
     verticalLayout->addWidget(vueHistoriqueCommandes);
     verticalLayout->addWidget(inputLine);
     verticalLayout->addLayout(layoutClavier);
 
-
-
+    //Assemble les layouts
     mainLayout->addWidget(vuePile);
     mainLayout->addLayout(verticalLayout);
 
+
     //QWidget *zoneCentrale = new QWidget;
     //zoneCentrale->setLayout(mainLayout);
+
 
     QWidget* tab1 = new QWidget();
     tab1->setLayout(mainLayout);

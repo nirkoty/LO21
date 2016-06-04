@@ -5,10 +5,7 @@
 #include <typeinfo>
 #include <QDebug>
 
-LitteraleEntiere::LitteraleEntiere(int s, int val) : LitteraleNumerique(s), valeur(val)
-{
-
-}
+LitteraleEntiere::LitteraleEntiere(int s, int val) : LitteraleNumerique(s), valeur(val){}
 
 LitteraleEntiere::LitteraleEntiere(QString exp){
     if(exp.at(0)=='-'){
@@ -58,21 +55,21 @@ Litterale* LitteraleEntiere::operator+(Litterale& lit2){
             neg=-1;
         return new LitteraleRationnelle(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getDenominateur().getValeur()));
     }
-    else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
+    /*else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
 
-        double somme =this->signe*valeur+lit2E->getSigne()*lit2E->getReelle().getValeur();
+        double somme = this->signe * valeur + lit2E->getReelle()->getSigne() * lit2E->getReelle()->getValeur();
         bool neg;
         if(somme>=0)
             neg=1;
         else
             neg=-1;
-        return new LitteraleComplexe(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getImaginaire().getValeur()));
-    }
+        return new LitteraleComplexe(new LitteraleEntiere(neg, somme), new LitteraleEntiere(1, lit2E->getImaginaire()->getValeur()));
+    }*/
 
 }
 
 Litterale* LitteraleEntiere::operator-(Litterale& lit2){
-    qDebug()<<"testCast";
+    qDebug()<<"testCast Litterale entiere " << typeid(&lit2).name();
     if(LitteraleEntiere *lit2E = dynamic_cast<LitteraleEntiere*>(&lit2)) {
         qDebug()<<"ENT";
         qDebug()<<this->signe <<" "<<valeur<<" "<<lit2E->signe<<" "<<lit2E->valeur;
@@ -108,13 +105,18 @@ Litterale* LitteraleEntiere::operator-(Litterale& lit2){
     }
     else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
 
-        double somme =this->signe*valeur-lit2E->getSigne()*lit2E->getReelle().getValeur();
+        /*double somme = this->signe*valeur-lit2E->getSigne()*lit2E->getReelle()->getValeur();
         bool neg;
         if(somme>=0)
             neg=1;
         else
-            neg=-1;
-        return new LitteraleComplexe(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getImaginaire().getValeur()));
+            neg=-1;*/
+
+        qDebug() << "LittEnt operateur- avec complexe ";
+
+        LitteraleNumerique* lit22 = lit2E->getReelle();
+        qDebug() << "LittEnt operateur- avec complexe 2";
+        return new LitteraleComplexe(dynamic_cast<LitteraleNumerique*>(*this-*lit22), lit2E->getImaginaire());
     }
 
 }
@@ -153,7 +155,7 @@ Litterale* LitteraleEntiere::operator*(Litterale& lit2){
             neg=-1;
         return new LitteraleRationnelle(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getDenominateur().getValeur()));
     }
-    else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
+   /* else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
         double sommeR =this->signe*valeur*lit2E->getReelle().getSigne()*lit2E->getReelle().getValeur();
         bool negR;
         if(sommeR>=0)
@@ -168,7 +170,7 @@ Litterale* LitteraleEntiere::operator*(Litterale& lit2){
             negI=-1;
 
         return new LitteraleComplexe(1, LitteraleEntiere(negR, sommeR), LitteraleEntiere(negI, sommeI));
-    }
+    }*/
 
 }
 
@@ -209,14 +211,14 @@ Litterale* LitteraleEntiere::operator/(Litterale& lit2){
             neg=-1;
         return new LitteraleRationnelle(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getDenominateur().getValeur()));
     }
-    else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
-        double sommeR =this->signe*valeur/lit2E->getReelle().getSigne()*lit2E->getReelle().getValeur();
+    /*else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
+        double sommeR =this->signe*valeur/lit2E->getReelle().getSigne()*lit2E->getReelle()->getValeur();
         bool negR;
         if(sommeR>=0)
             negR=1;
         else
             negR=-1;
-        double sommeI =this->signe*valeur/lit2E->getImaginaire().getSigne()*lit2E->getImaginaire().getValeur();
+        double sommeI =this->signe*valeur/lit2E->getImaginaire().getSigne()*lit2E->getImaginaire()->getValeur();
         bool negI;
         if(sommeI>=0)
             negI=1;
@@ -224,7 +226,7 @@ Litterale* LitteraleEntiere::operator/(Litterale& lit2){
             negI=-1;
 
         return new LitteraleComplexe(1, LitteraleEntiere(negR, sommeR), LitteraleEntiere(negI, sommeI));
-    }
+    }*/
 
 }
 

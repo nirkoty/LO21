@@ -6,6 +6,10 @@
 
 class LitteraleRationnelle : public LitteraleNumerique
 {
+private:
+    LitteraleEntiere nominateur;
+    LitteraleEntiere denominateur;
+
 public:
     LitteraleRationnelle(int s, LitteraleEntiere nom, LitteraleEntiere denom);
     LitteraleRationnelle(QString input);
@@ -13,14 +17,11 @@ public:
     LitteraleEntiere getDenominateur(){return denominateur;}
     QString toString();
     static bool estLitteraleRationnelle(QString bloc);
-    Litterale* operator+(Litterale& lit2){}
-    Litterale* operator*(Litterale& lit2){}
-    Litterale* operator/(Litterale& lit2){}
-    Litterale* operator-(Litterale& lit2){}
+    Litterale* operator+(Litterale& lit2){return this;}
+    Litterale* operator*(Litterale& lit2){return this;}
+    Litterale* operator/(Litterale& lit2){return this;}
+    Litterale* operator-(Litterale& lit2){return this;}
 
-private:
-    LitteraleEntiere nominateur;
-    LitteraleEntiere denominateur;
 };
 
 #endif // LITTERALERATIONNELLE_H

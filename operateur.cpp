@@ -51,7 +51,7 @@ void Operateur::executer(){
     else if(type=="$"){
         LitteraleEntiere *lit1 = dynamic_cast<LitteraleEntiere*> (litterales.at(0));
         LitteraleEntiere *lit2 = dynamic_cast<LitteraleEntiere*> (litterales.at(1));
-        newLit = new LitteraleComplexe(1, *lit2, *lit1);
+        newLit = new LitteraleComplexe(lit2, lit1);
     }
 
     else if(type=="NEG"){

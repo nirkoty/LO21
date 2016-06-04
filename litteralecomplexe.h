@@ -6,23 +6,24 @@
 #include "litteralenumerique.h"
 #include "litteraleentiere.h"
 
-class LitteraleComplexe : public LitteraleNumerique
+class LitteraleComplexe : public Litterale
 {
 public:
-    LitteraleComplexe(int s, LitteraleEntiere re, LitteraleEntiere im);
+    LitteraleComplexe(LitteraleNumerique* re, LitteraleNumerique* im);
     LitteraleComplexe(QString input);
-    LitteraleEntiere getReelle() const {return partieRelle;}
-    LitteraleEntiere getImaginaire() const {return partieImaginaire;}
+    LitteraleNumerique* getReelle() const {return partieReelle;}
+    LitteraleNumerique* getImaginaire() const {return partieImaginaire;}
     QString toString();
     static bool estLitteraleComplexe(QString bloc);
-    Litterale* operator+(Litterale& lit2){}
-    Litterale* operator*(Litterale& lit2){}
-    Litterale* operator/(Litterale& lit2){}
-    Litterale* operator-(Litterale& lit2){}
+    Litterale* operator+(Litterale& lit2){return this;}
+    Litterale* operator*(Litterale& lit2){return this;}
+    Litterale* operator/(Litterale& lit2){return this;}
+    Litterale* operator-(Litterale& lit2){return this;}
 
 private :
-    LitteraleEntiere partieRelle;
-    LitteraleEntiere partieImaginaire;
+    LitteraleNumerique* partieReelle;
+    LitteraleNumerique* partieImaginaire;
+
 };
 
 #endif // LITTERALECOMPLEXE_H

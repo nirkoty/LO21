@@ -111,7 +111,7 @@ void Manager::operer(QString op){
     }*/
 
     if(op !="DUP" && op!="SWAP" && op!="LASTOP" && op!="CLEAR" && op!="UNDO" && op!="REDO"){
-        qDebug()<<"IF "<<getArite(op);
+        qDebug()<<"IF manager"<<getArite(op);
                 for(unsigned int i=0; i<getArite(op); i++){
 
                     litterales.push_back(dynamic_cast<LitteraleNumerique*> (pile.depiler()));
@@ -120,20 +120,23 @@ void Manager::operer(QString op){
 
     Litterale* newLit;
 
+    qDebug() << "manager operer";
+
 
 
     if(op=="+")
         newLit = *litterales.at(0)+ *litterales.at(1);
     else if(op=="*")
         newLit = *litterales.at(0)*(*litterales.at(1));
-    else if(op=="-")
-        newLit = *litterales.at(0)-*litterales.at(1);
+    else if(op=="-"){
+        qDebug() << "Test -";
+        newLit = *litterales.at(0)-*litterales.at(1);}
     else if(op=="/")
         newLit = *litterales.at(0)/(*litterales.at(1));
     else if(op=="$"){
         LitteraleEntiere *lit1 = dynamic_cast<LitteraleEntiere*> (litterales.at(0));
         LitteraleEntiere *lit2 = dynamic_cast<LitteraleEntiere*> (litterales.at(1));
-        newLit = new LitteraleComplexe(1, *lit2, *lit1);
+        newLit = new LitteraleComplexe(lit2, lit1);
     }
     else if(op=="NEG"){
         pile.savePile();
@@ -164,7 +167,7 @@ void Manager::operer(QString op){
         qDebug()<<"OP LASTOP "<<lastOp;
         operer(lastOp);
     }
-
+    qDebug() << "juste avant ?" << newLit->toString();
 
     if(op!="DUP" && op!="DROP" && op!="SWAP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTOP"){
      pile.empiler(newLit);

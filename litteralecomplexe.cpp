@@ -3,20 +3,22 @@
 #include "litteralereelle.h"
 #include "litteraleentiere.h"
 #include "QStringList"
+#include <QDebug>
 
-LitteraleComplexe::LitteraleComplexe(int s, LitteraleEntiere re, LitteraleEntiere im) : LitteraleNumerique(s), partieRelle(re), partieImaginaire(im)
-{
-
-}
+LitteraleComplexe::LitteraleComplexe(LitteraleNumerique* re, LitteraleNumerique* im) : partieReelle(re), partieImaginaire(im){}
 
 LitteraleComplexe::LitteraleComplexe(QString input){
-    if(input.left(1)=="-"){
-        signe=-1;
-        input=input.remove(0,1);
-    }
+
     QStringList elements = input.split("$");
-    partieRelle= LitteraleEntiere(elements.at(0));
-    partieImaginaire = LitteraleEntiere(elements.at(1));
+    qDebug()<<elements.at(0);
+    if (LitteraleEntiere::estLitteraleEntiere(elements.at(0))) partieReelle = new LitteraleEntiere(elements.at(0));
+    else if (LitteraleReelle::estLitteraleReelle(elements.at(0))) partieReelle = new LitteraleReelle(elements.at(0));
+    else if (LitteraleRationnelle::estLitteraleRationnelle(elements.at(0))) partieReelle = new LitteraleRationnelle(elements.at(0));
+
+    if (LitteraleEntiere::estLitteraleEntiere(elements.at(1))) partieImaginaire = new LitteraleEntiere(elements.at(1));
+    else if (LitteraleReelle::estLitteraleReelle(elements.at(1))) partieImaginaire = new LitteraleReelle(elements.at(1));
+    else if (LitteraleRationnelle::estLitteraleRationnelle(elements.at(1))) partieImaginaire = new LitteraleRationnelle(elements.at(1));
+
 }
 
 bool LitteraleComplexe::estLitteraleComplexe(QString bloc){
@@ -37,8 +39,7 @@ bool LitteraleComplexe::estLitteraleComplexe(QString bloc){
 
 
 QString LitteraleComplexe::toString(){
-    if(signe==1)
-        return(partieRelle.toString()+"+"+partieImaginaire.toString()+"i");
-    else
-        return("-"+partieRelle.toString()+"+"+partieImaginaire.toString()+"i");
+    if (partieImaginaire->getSigne() == -1)    return(partieReelle->toString()+"-"+partieImaginaire->toString()+"i");
+    if (partieImaginaire->getSigne() == 1)    return(partieReelle->toString()+"+"+partieImaginaire->toString()+"i");
+
 }

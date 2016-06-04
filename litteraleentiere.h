@@ -6,6 +6,10 @@
 
 class LitteraleEntiere :  public LitteraleNumerique
 {
+
+private:
+    int valeur;
+
 public:
     LitteraleEntiere();
     LitteraleEntiere(int s, int val);
@@ -19,8 +23,6 @@ public:
     Litterale* operator-(Litterale& lit2);
 
 
-private:
-    int valeur;
 };
 
 #endif // LITTERALEENTIERE_H

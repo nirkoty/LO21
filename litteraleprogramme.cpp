@@ -88,5 +88,5 @@ QString LitteraleProgramme::toString(){
 
 
 Litterale* LitteraleProgramme::evaluer(){
-
+    return this;
 }

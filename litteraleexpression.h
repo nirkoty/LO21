@@ -16,6 +16,10 @@ public:
     QString toStringAvecGuillemets();
     Litterale* evaluer();
     Litterale* evaluerRec(QString exp);
+    virtual Litterale* operator+(Litterale& lit2){return this;}
+    virtual Litterale* operator*(Litterale& lit2){return this;}
+    virtual Litterale* operator-(Litterale& lit2){return this;}
+    virtual Litterale* operator/(Litterale& lit2){return this;}
 
 
 private:

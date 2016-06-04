@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     litteraleprogramme.cpp \
     operateur.cpp \
     pile.cpp \
-    manager.cpp
+    manager.cpp \
+    litteraleexpression.cpp \
+    litteralenumerique.cpp
 
 HEADERS  += mainwindow.h \
     operande.h \
@@ -35,6 +37,8 @@ HEADERS  += mainwindow.h \
     litteraleprogramme.h \
     operateur.h \
     pile.h \
-    manager.h
+    manager.h \
+    litteraleexpression.h \
+    litteralenumerique.h
 
 FORMS    += mainwindow.ui

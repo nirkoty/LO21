@@ -9,6 +9,11 @@
 
 class LitteraleProgramme : public Litterale
 {
+private:
+    std::vector<Operande*> operandes;
+    int nbOperandes;
+    QString programme;
+
 public:
     LitteraleProgramme(QString programme);
     bool static estLitteraleProgramme(QString bloc);
@@ -16,11 +21,13 @@ public:
     QString getStrProgramme();
     Litterale* evaluer();
 
+    Litterale* operator+(Litterale& lit2){return this;}
+    Litterale* operator*(Litterale& lit2){return this;}
+    Litterale* operator/(Litterale& lit2){return this;}
+    Litterale* operator-(Litterale& lit2){return this;}
 
-private:
-    std::vector<Operande*> operandes;
-    int nbOperandes;
-    QString programme;
+
+
 
 };
 

@@ -67,7 +67,7 @@ Litterale* LitteraleReelle::operator+(Litterale& lit2){
             neg=-1;
         return new LitteraleRationnelle(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getDenominateur().getValeur()));
     }
-    else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
+    /*else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
 
         double somme =this->signe*valeur+lit2E->getSigne()*lit2E->getReelle().getValeur();
         bool neg;
@@ -76,7 +76,7 @@ Litterale* LitteraleReelle::operator+(Litterale& lit2){
         else
             neg=-1;
         return new LitteraleComplexe(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getImaginaire().getValeur()));
-    }
+    }*/
 
 }
 
@@ -115,7 +115,7 @@ Litterale* LitteraleReelle::operator-(Litterale& lit2){
             neg=-1;
         return new LitteraleRationnelle(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getDenominateur().getValeur()));
     }
-    else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
+   /* else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
 
         double somme =this->signe*valeur-lit2E->getSigne()*lit2E->getReelle().getValeur();
         bool neg;
@@ -124,7 +124,7 @@ Litterale* LitteraleReelle::operator-(Litterale& lit2){
         else
             neg=-1;
         return new LitteraleComplexe(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getImaginaire().getValeur()));
-    }
+    }*/
 
 }
 
@@ -162,7 +162,7 @@ Litterale* LitteraleReelle::operator*(Litterale& lit2){
             neg=-1;
         return new LitteraleRationnelle(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getDenominateur().getValeur()));
     }
-    else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
+   /* else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
         double sommeR =this->signe*valeur*lit2E->getReelle().getSigne()*lit2E->getReelle().getValeur();
         bool negR;
         if(sommeR>=0)
@@ -177,7 +177,7 @@ Litterale* LitteraleReelle::operator*(Litterale& lit2){
             negI=-1;
 
         return new LitteraleComplexe(1, LitteraleEntiere(negR, sommeR), LitteraleEntiere(negI, sommeI));
-    }
+    }*/
 
 }
 
@@ -219,7 +219,7 @@ Litterale* LitteraleReelle::operator/(Litterale& lit2){
             neg=-1;
         return new LitteraleRationnelle(neg, LitteraleEntiere(1, somme), LitteraleEntiere(1, lit2E->getDenominateur().getValeur()));
     }
-    else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
+   /* else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
         double sommeR =this->signe*valeur/lit2E->getReelle().getSigne()*lit2E->getReelle().getValeur();
         bool negR;
         if(sommeR>=0)
@@ -234,6 +234,6 @@ Litterale* LitteraleReelle::operator/(Litterale& lit2){
             negI=-1;
 
         return new LitteraleComplexe(1, LitteraleEntiere(negR, sommeR), LitteraleEntiere(negI, sommeI));
-    }
+    }*/
 
 }

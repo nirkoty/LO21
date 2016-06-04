@@ -5,18 +5,17 @@
 
 class LitteraleNumerique : public Litterale
 {
+protected:
+    int signe;
+
 public:
     LitteraleNumerique();
     LitteraleNumerique(int s);
     int getSigne(){return signe;}
-    virtual Litterale* operator+(Litterale& lit2) = 0;
-    virtual Litterale* operator*(Litterale& lit2) = 0;
-    virtual Litterale* operator-(Litterale& lit2) = 0;
-    virtual Litterale* operator/(Litterale& lit2) = 0;
-    //virtual QString toString()=0;
 
-protected:
-    int signe;
+
+    //virtual QString toString()=0;
 };
+
 
 #endif // LITTERALENUMERIQUE_H

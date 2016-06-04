@@ -11,6 +11,8 @@
 
 int main(int argc, char *argv[])
 {
+    qDebug()<<"coucou";
+
     QApplication a(argc, argv);
     Pile pile;
     Manager *manager = new Manager(pile);

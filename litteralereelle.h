@@ -5,6 +5,8 @@
 
 class LitteraleReelle : public LitteraleNumerique
 {
+private:
+    double valeur;
 public:
     LitteraleReelle(int s, double val);
     LitteraleReelle(QString exp);
@@ -16,9 +18,7 @@ public:
     Litterale* operator*(Litterale& lit2);
     Litterale* operator/(Litterale& lit2);
     Litterale* operator-(Litterale& lit2);
-
-private:
-    double valeur;
 };
+
 
 #endif // LITTERALEREELLE_H
