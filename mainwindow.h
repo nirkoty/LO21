@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(Pile& pile, Manager* man,  QWidget *parent = 0);
+    explicit MainWindow(Manager* man,  QWidget *parent = 0);
     ~MainWindow();
 
 private:
@@ -46,6 +46,7 @@ private:
     QPushButton *boutonSupprimerVariable;
     QPushButton *boutonModifierVariable;
     QTabWidget *tabWidget;
+    Pile* pile;
 
 
 public slots :

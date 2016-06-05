@@ -7,7 +7,7 @@
 #include "litteraleprogramme.h"
 #include "litteraleexpression.h"
 
-Pile::Pile() : modeleProgrammes(new QStringListModel), indicePiles(0)
+Pile::Pile(Manager *man) : modeleProgrammes(new QStringListModel), indicePiles(0), manager(man)
 {
     savedStates.push_back(vecteur);
 }
@@ -65,7 +65,7 @@ void Pile::dupliquer(){
     }
     if(dynamic_cast<LitteraleExpression*>(last)){
         LitteraleExpression* dup= dynamic_cast<LitteraleExpression*>(last);
-        empiler(new LitteraleExpression(dup->toString()));
+        empiler(new LitteraleExpression(dup->toString(), manager));
     }
 
 
@@ -156,7 +156,7 @@ void Pile::empilerLastArgs(){
             empiler(new LitteraleComplexe(lastArgs.at(i)));
 
         if(LitteraleExpression::estLitteraleExpression(lastArgs.at(i)))
-            empiler(new LitteraleExpression(lastArgs.at(i)));
+            empiler(new LitteraleExpression(lastArgs.at(i), manager));
         if(LitteraleProgramme::estLitteraleProgramme(lastArgs.at(i)))
             empiler(new LitteraleProgramme(lastArgs.at(i)));
     }

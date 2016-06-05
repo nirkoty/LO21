@@ -5,18 +5,23 @@
 #include <QLineEdit>
 #include <typeinfo>
 
-Manager::Manager(Pile &p) : pile(p), mapProgramme(new QMap<QString, QString>), mapVariable(new QMap<QString, QString>), stringListProgrammes(new QStringList),  stringListVariables(new QStringList)
+Manager::Manager() :mapProgramme(new QMap<QString, QString>), mapVariable(new QMap<QString, QString>), stringListProgrammes(new QStringList),  stringListVariables(new QStringList), pile(new Pile(this))
 {
+
 }
 
 
 bool Manager::interpreter(QString input){
 
-   if(input.right(1)=="+" || input.right(1)=="-" || input.right(1)=="*" ||  input.right(1)=="$"){
-        executer(input);
-        return true;
+   if(!input.contains("'")){
+       if(input.right(1)=="+" || input.right(1)=="-" || input.right(1)=="*" ||  input.right(1)=="$"){
+            executer(input);
+            return true;
+       }
+       return false;
    }
-   return false;
+   else
+       return false;
 
 }
 
@@ -35,20 +40,26 @@ void Manager::executer(QString input){
             input="";
 
         if(LitteraleReelle::estLitteraleReelle(tmp))
-            pile.empiler(new LitteraleReelle(tmp));
+            pile->empiler(new LitteraleReelle(tmp));
         else if (LitteraleEntiere::estLitteraleEntiere(tmp))
-            pile.empiler(new LitteraleEntiere(tmp));
+            pile->empiler(new LitteraleEntiere(tmp));
         else if (estUnOperateur(tmp)){
-            qDebug()<<"estUnOperateur";
-            operer(tmp);
+            try{
+                operer(tmp);
+            }catch(ComputerException ce){
+                ce.what();
+                ok=false;
+            }
+
+
         }
         else if(LitteraleRationnelle::estLitteraleRationnelle(tmp)){
-            pile.empiler(new LitteraleRationnelle(tmp));
+            pile->empiler(new LitteraleRationnelle(tmp));
         }
         else if (LitteraleProgramme::estLitteraleProgramme(tmp))
-            pile.empiler(new LitteraleProgramme(tmp));
+            pile->empiler(new LitteraleProgramme(tmp));
         else if (LitteraleExpression::estLitteraleExpression(tmp))
-            pile.empiler(new LitteraleExpression(tmp));
+            pile->empiler(new LitteraleExpression(tmp, this));
         else if(estLitteraleAtome(tmp)){
             Litterale* prog = getAtome(tmp);
             executer(prog->toString());
@@ -59,7 +70,7 @@ void Manager::executer(QString input){
             ok=false;
         }
         if(ok && tmp!="UNDO" && tmp!="REDO")
-            pile.savePile();
+            pile->savePile();
 
 
     }
@@ -69,7 +80,7 @@ void Manager::executer(QString input){
 
 void Manager::operer(QString op){
 
-    if((getArite(op) <= pile.taille()) || getArite(op)==-1){
+    if((getArite(op) <= pile->taille()) || getArite(op)==-1){
         if(op!="LASTOP")
             lastOp=op;
 
@@ -78,14 +89,14 @@ void Manager::operer(QString op){
 
         if(op !="DUP" && op!="SWAP" && op!="LASTOP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTARGS" && op!="DROP"){
                     for(unsigned int i=0; i<getArite(op); i++){
-                        Litterale* tmp = pile.depiler();
+                        Litterale* tmp = pile->depiler();
                         newLastArgs.push_back(tmp->toString());
                         litterales.push_back(dynamic_cast<Litterale*> (tmp));
                     }
-                    pile.setLastArgs(newLastArgs);
+                    pile->setLastArgs(newLastArgs);
         }
 
-        Litterale* newLit;
+        Litterale* newLit=NULL;
 
 
 
@@ -107,35 +118,35 @@ void Manager::operer(QString op){
 
         }
         else if(op=="DUP"){
-            pile.dupliquer();
+            pile->dupliquer();
         }
 
         else if(op=="DROP"){
-            pile.depiler();
+            pile->depiler();
         }
         else if(op=="SWAP"){
-            pile.swap();
+            pile->swap();
 
 
 
         }
         else if(op=="CLEAR"){
-            pile.clear();
+            pile->clear();
 
 
         }
         else if(op=="UNDO"){
-            pile.undo();
+            pile->undo();
         }
         else if(op=="REDO"){
 
-            pile.redo();
+            pile->redo();
         }
         else if(op=="LASTOP"){
             operer(lastOp);
         }
         else if(op=="LASTARGS"){
-            pile.empilerLastArgs();
+            pile->empilerLastArgs();
         }
         else if(op=="STO"){
             if(LitteraleProgramme::estLitteraleProgramme(litterales.at(0)->toString())){
@@ -153,14 +164,42 @@ void Manager::operer(QString op){
 
         }
 
+        else if(op=="FORGET"){
+            Litterale* lit0=litterales.at(0);
+            if(mapProgramme->contains(lit0->toString())){
+                supprimerProgramme(lit0->toString());
+                ecrireFichierProgramme(mapProgramme);
+            }
+            else if(mapVariable->contains(lit0->toString())){
+                supprimerVariable(lit0->toString());
+                ecrireFichierVariable(mapVariable);
+            }
 
-        if(op!="DUP" && op!="DROP" && op!="SWAP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTOP"  && op!="LASTARGS" && op!="STO"){
-         pile.empiler(newLit);
+        }
+
+        else if(op=="EVAL"){
+            try{
+                LitteraleExpression* litExpression;
+                if(litExpression=dynamic_cast<LitteraleExpression*> (litterales.at(0))){
+                    newLit=litExpression->evaluer();
+                }
+                else
+                    throw ComputerException("La littérale n'est pas un programme ou une expression");
+            }catch(ComputerException ce){
+                ce.what();
+                pile->empiler(litterales.at(0));
+            }
+        }
+
+
+        if(op!="DUP" && op!="DROP" && op!="SWAP" && op!="CLEAR" && op!="UNDO" && op!="REDO" && op!="LASTOP"  && op!="LASTARGS" && op!="STO" && op!="FORGET" && newLit!= NULL){
+         pile->empiler(newLit);
         }
     }
-    else
-        qDebug()<<"Erreur execution commande";
+    else{
+        throw ComputerException("Pas assez d'élements dans la pile pour appliquer cet opérateur");
 
+    }
 }
 
 
@@ -169,7 +208,7 @@ void Manager::operer(QString op){
 int Manager::getArite(QString op){
     if(op=="+" || op=="-" || op=="*" || op=="/" || op=="$" || op=="STO")
         return 2;
-    if(op=="NEG" || op=="DUP" || op=="DROP")
+    if(op=="NEG" || op=="DUP" || op=="DROP" | op=="FORGET" || op=="EVAL")
         return 1;
     return -1;
 }
@@ -177,7 +216,7 @@ int Manager::getArite(QString op){
 
 bool Manager::estUnOperateur(QString op){
     return (op=="+" || op=="-" || op=="*" || op=="/" || op=="$" || op=="DUP" || op=="DROP" || op=="SWAP" || op=="LASTOP"
-            || op=="CLEAR" || op=="UNDO" || op=="REDO" || op=="LASTARGS" || op=="STO");
+            || op=="CLEAR" || op=="UNDO" || op=="REDO" || op=="LASTARGS" || op=="STO" || op=="FORGET" || op=="EVAL");
 }
 
 

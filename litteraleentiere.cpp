@@ -69,7 +69,7 @@ Litterale* LitteraleEntiere::operator+(Litterale& lit2){
 }
 
 Litterale* LitteraleEntiere::operator-(Litterale& lit2){
-    qDebug()<<"testCast Litterale entiere " << typeid(&lit2).name();
+    qDebug()<<"testCast Litterale entiere " << lit2.toString();
     if(LitteraleEntiere *lit2E = dynamic_cast<LitteraleEntiere*>(&lit2)) {
         qDebug()<<"ENT";
         qDebug()<<this->signe <<" "<<valeur<<" "<<lit2E->signe<<" "<<lit2E->valeur;
@@ -116,7 +116,7 @@ Litterale* LitteraleEntiere::operator-(Litterale& lit2){
 
         LitteraleNumerique* lit22 = lit2E->getReelle();
         qDebug() << "LittEnt operateur- avec complexe 2";
-        return new LitteraleComplexe(dynamic_cast<LitteraleNumerique*>(*this-*lit22), lit2E->getImaginaire());
+        return new LitteraleComplexe(dynamic_cast<LitteraleNumerique*>(*lit22-*this), lit2E->getImaginaire());
     }
 
 }

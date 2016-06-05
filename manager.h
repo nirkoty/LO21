@@ -8,18 +8,18 @@
 #include "litteralereelle.h"
 #include "pile.h"
 #include <vector>
-#include "operateur.h"
 #include <QDebug>
 #include <QObject>
 #include <QMap>
 #include <QFile>
 #include <QXmlStreamWriter>
+#include "computerexception.h"
 
 class Manager : public QObject
 {
 
 public:
-    Manager(Pile& p);
+    Manager();
     bool interpreter(QString input);
     void executer(QString input);
     QMap<QString, QString>* getMapProgramme() const {return mapProgramme;}
@@ -39,8 +39,10 @@ public:
     void ecrireFichierVariable(QMap<QString, QString>* mapVariable, QLineEdit* zoneIdentifiantVariable=0, QTextEdit* zoneVariable=0);
     void ecrireFichierProgramme(QMap<QString, QString>* mapVariable, QLineEdit* zoneIdentifiant=0, QTextEdit* zoneProgramme=0);
 
+    Pile* getPile(){return pile;}
+
 private:
-    Pile& pile;
+    Pile* pile;
     QMap<QString, QString>* mapProgramme;
     QMap<QString, QString>* mapVariable;
     QStringList *stringListProgrammes;

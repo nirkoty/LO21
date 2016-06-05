@@ -12,8 +12,10 @@
 #include "QTabWidget"
 #include "QErrorMessage"
 
-MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(parent), manager(man)
+MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), manager(man)
 {
+
+    pile = manager->getPile();
 
 
     // Général
@@ -78,7 +80,7 @@ MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(
     QObject::connect(inputLine, SIGNAL(textChanged(QString)), this, SLOT(interpreter(QString))) ;
     QObject::connect(inputLine,SIGNAL(returnPressed()), this, SLOT(returnPressedStr()));
 
-    pile.setView(vuePile);
+    pile->setView(vuePile);
 
 
 
@@ -314,9 +316,7 @@ void MainWindow::ajouterProgramme(){
     }
     else{
         qDebug()<<"erreur ajout";
-        QMessageBox boiteErreur;
-        boiteErreur.setText("Un programme à ce nom existe déja");
-        boiteErreur.exec();
+
     }
  }
 

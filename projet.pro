@@ -21,11 +21,11 @@ SOURCES += main.cpp\
     litteralerationnelle.cpp \
     litteralecomplexe.cpp \
     litteraleprogramme.cpp \
-    operateur.cpp \
     pile.cpp \
     manager.cpp \
     litteraleexpression.cpp \
-    litteralenumerique.cpp
+    litteralenumerique.cpp \
+    computerexception.cpp
 
 HEADERS  += mainwindow.h \
     operande.h \
@@ -35,10 +35,10 @@ HEADERS  += mainwindow.h \
     litteralerationnelle.h \
     litteralecomplexe.h \
     litteraleprogramme.h \
-    operateur.h \
     pile.h \
     manager.h \
     litteraleexpression.h \
-    litteralenumerique.h
+    litteralenumerique.h \
+    computerexception.h
 
 FORMS    += mainwindow.ui
