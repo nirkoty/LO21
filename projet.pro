@@ -14,7 +14,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    operande.cpp \
     litterale.cpp \
     litteraleentiere.cpp \
     litteralereelle.cpp \
@@ -28,7 +27,6 @@ SOURCES += main.cpp\
     computerexception.cpp
 
 HEADERS  += mainwindow.h \
-    operande.h \
     litterale.h \
     litteraleentiere.h \
     litteralereelle.h \

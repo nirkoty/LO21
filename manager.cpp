@@ -30,50 +30,54 @@ void Manager::executer(QString input){
 
     QString tmp;
     bool ok=true;
-    while(input.length()>0){
-        qDebug()<<input;
-        tmp = input.left(input.indexOf(" "));
-        qDebug()<<"tmp "<<tmp;
-        if(input.indexOf(" ")!=-1)
-            input=input.remove(0, input.indexOf(" ")+1);
-        else
-            input="";
+    try{
+        while(input.length()>0){
+            qDebug()<<input;
+            tmp = input.left(input.indexOf(" "));
+            qDebug()<<"tmp "<<tmp;
+            if(input.indexOf(" ")!=-1)
+                input=input.remove(0, input.indexOf(" ")+1);
+            else
+                input="";
 
-        if(LitteraleReelle::estLitteraleReelle(tmp))
-            pile->empiler(new LitteraleReelle(tmp));
-        else if (LitteraleEntiere::estLitteraleEntiere(tmp))
-            pile->empiler(new LitteraleEntiere(tmp));
-        else if (estUnOperateur(tmp)){
-            try{
-                operer(tmp);
-            }catch(ComputerException ce){
-                ce.what();
+            if(LitteraleReelle::estLitteraleReelle(tmp))
+                pile->empiler(new LitteraleReelle(tmp));
+            else if (LitteraleEntiere::estLitteraleEntiere(tmp))
+                pile->empiler(new LitteraleEntiere(tmp));
+            else if (estUnOperateur(tmp)){
+                try{
+                    operer(tmp);
+                }catch(ComputerException ce){
+                    ce.what();
+                    ok=false;
+                }
+
+
+            }
+            else if(LitteraleRationnelle::estLitteraleRationnelle(tmp)){
+                pile->empiler(new LitteraleRationnelle(tmp));
+            }
+            else if (LitteraleProgramme::estLitteraleProgramme(tmp))
+                pile->empiler(new LitteraleProgramme(tmp));
+            else if (LitteraleExpression::estLitteraleExpression(tmp))
+                pile->empiler(new LitteraleExpression(tmp, this));
+            else if(estLitteraleAtome(tmp)){
+                Litterale* prog = getAtome(tmp);
+                executer(prog->toString());
+                delete prog;
+            }
+            else{
+                throw ComputerException(QString("Impossible d'identifier l'opérande "+tmp));
                 ok=false;
             }
-
-
+            if(ok && tmp!="UNDO" && tmp!="REDO")
+                pile->savePile();
         }
-        else if(LitteraleRationnelle::estLitteraleRationnelle(tmp)){
-            pile->empiler(new LitteraleRationnelle(tmp));
-        }
-        else if (LitteraleProgramme::estLitteraleProgramme(tmp))
-            pile->empiler(new LitteraleProgramme(tmp));
-        else if (LitteraleExpression::estLitteraleExpression(tmp))
-            pile->empiler(new LitteraleExpression(tmp, this));
-        else if(estLitteraleAtome(tmp)){
-            Litterale* prog = getAtome(tmp);
-            executer(prog->toString());
-            delete prog;
-        }
-        else{
-            qDebug()<<"not found";
-            ok=false;
-        }
-        if(ok && tmp!="UNDO" && tmp!="REDO")
-            pile->savePile();
-
-
+    }catch(ComputerException ce){
+        ce.what();
     }
+
+
 
 }
 
@@ -182,9 +186,10 @@ void Manager::operer(QString op){
                 LitteraleExpression* litExpression;
                 if(litExpression=dynamic_cast<LitteraleExpression*> (litterales.at(0))){
                     newLit=litExpression->evaluer();
+                    delete litExpression;
                 }
                 else
-                    throw ComputerException("La littérale n'est pas un programme ou une expression");
+                    throw ComputerException(QString("La littérale n'est pas un programme ou une expression"));
             }catch(ComputerException ce){
                 ce.what();
                 pile->empiler(litterales.at(0));
@@ -197,7 +202,7 @@ void Manager::operer(QString op){
         }
     }
     else{
-        throw ComputerException("Pas assez d'élements dans la pile pour appliquer cet opérateur");
+        throw ComputerException(QString("Pas assez d'élements dans la pile pour appliquer cet opérateur"));
 
     }
 }
@@ -293,6 +298,7 @@ void Manager::ecrireFichierVariable(QMap<QString, QString>* mapVariable, QLineEd
 
     xmlWriter.writeEndElement();
     xmlWriter.writeEndDocument();
+    file.close();
     if(zoneIdentifiantVariable!=0){
         zoneIdentifiantVariable->clear();
         zoneVariable->clear();
@@ -328,6 +334,7 @@ void Manager::ecrireFichierProgramme(QMap<QString, QString>* mapProgramme, QLine
 
     xmlWriter.writeEndElement();
     xmlWriter.writeEndDocument();
+    file.close();
     if(zoneIdentifiant!=0){
         zoneIdentifiant->clear();
         zoneProgramme->clear();

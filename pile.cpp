@@ -9,6 +9,42 @@
 
 Pile::Pile(Manager *man) : modeleProgrammes(new QStringListModel), indicePiles(0), manager(man)
 {
+    QXmlStreamReader xmlReader;
+    QFile filePile("pile.xml");
+    filePile.open(QFile::ReadOnly);
+    xmlReader.setDevice(&filePile);
+
+
+
+    xmlReader.readNext();
+    QString tmp;
+
+    while(!xmlReader.atEnd() && !xmlReader.hasError()) {
+
+            QXmlStreamReader::TokenType token = xmlReader.readNext();
+
+            if(token == QXmlStreamReader::StartDocument) {
+                    continue;
+            }
+            if(token == QXmlStreamReader::StartElement) {
+
+                    if(xmlReader.name() == "string") {
+                         tmp= xmlReader.readElementText();
+                         if(LitteraleReelle::estLitteraleReelle(tmp))
+                             empiler(new LitteraleReelle(tmp));
+                         else if (LitteraleEntiere::estLitteraleEntiere(tmp))
+                             empiler(new LitteraleEntiere(tmp));
+                         else if(LitteraleRationnelle::estLitteraleRationnelle(tmp)){
+                             empiler(new LitteraleRationnelle(tmp));
+                         }
+                         else if (LitteraleProgramme::estLitteraleProgramme(tmp))
+                             empiler(new LitteraleProgramme(tmp));
+                         else if (LitteraleExpression::estLitteraleExpression(tmp))
+                            empiler(new LitteraleExpression(tmp, manager));
+                    }
+            }
+    }
+    filePile.close();
     savedStates.push_back(vecteur);
 }
 
@@ -20,15 +56,11 @@ void Pile::empiler(Litterale *lit){
     modeleProgrammes->insertRow(modeleProgrammes->rowCount());
     QModelIndex index = modeleProgrammes->index(modeleProgrammes->rowCount()-1);
     modeleProgrammes->setData(index, lit->toString());
-
-
 }
 
 void Pile::setView(QListView *viewPile){
     view=viewPile;
     view->setModel(modeleProgrammes);
-
-
 }
 
 Litterale* Pile::depiler(){
@@ -40,8 +72,6 @@ Litterale* Pile::depiler(){
 
 void Pile::dupliquer(){
     Litterale* last = vecteur.at(vecteur.size()-1);
-
-    qDebug()<<last->toString();
 
     if(dynamic_cast<LitteraleEntiere*>(last)){
         LitteraleEntiere* dup= dynamic_cast<LitteraleEntiere*>(last);
@@ -103,13 +133,34 @@ void Pile::savePile(){
     indicePiles++;
 
 
+    QString path("pile.xml");
+    QFile file(path);
+    file.open(QFile::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.setAutoFormattingIndent(2);
+    xmlWriter.writeStartDocument();
+
+    xmlWriter.writeStartElement("litterales");
+    Litterale* tmp;
+    for(unsigned int i=0; i<vecteur.size(); i++){
+
+        tmp=vecteur.at(i);
+        xmlWriter.writeStartElement("litterale");
+        xmlWriter.writeTextElement("string", tmp->toString());
+        xmlWriter.writeEndElement();
+    }
+
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndDocument();
+
+    file.close();
+
 }
 
 void Pile::undo(){
 
-    qDebug()<<"indicePiles"<<indicePiles;
     vecteur = savedStates.at(--indicePiles);
-qDebug()<<"indicePiles2"<<indicePiles;
     afficherPile();
 
 }

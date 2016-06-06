@@ -7,22 +7,31 @@
 #include "QLineEdit"
 #include "QWidget"
 #include "QtGui"
-#include "QGridLayout"
 #include "QTextEdit"
 #include "QTabWidget"
 #include "QErrorMessage"
+#include <QMenu>
 
 MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), manager(man)
 {
 
     pile = manager->getPile();
 
+    //paramètres d'affichage
+    QMenu *menuAfficher = menuBar()->addMenu("&Afficher");
+    actionAfficherClavier = new QAction("&Afficher le clavier", this);
+    actionAfficherClavier->setCheckable(true);
+    actionAfficherClavier->setChecked(true);
+    menuAfficher->addAction(actionAfficherClavier);
+
+    QObject::connect(actionAfficherClavier, SIGNAL(toggled(bool)), this, SLOT(afficherClavier(bool)));
+
 
     // Général
     QHBoxLayout *mainLayout= new QHBoxLayout();
     tabWidget = new QTabWidget();
     QVBoxLayout *verticalLayout = new QVBoxLayout();
-    QGridLayout *layoutClavier = new QGridLayout;
+    layoutClavier = new QGridLayout;
 
     //Vue de la pile (gauche)
     QListView *vuePile = new QListView();
@@ -33,26 +42,97 @@ MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), man
     inputLine = new QLineEdit();
 
     //Clavier numérique
+    QSignalMapper *signalMapper = new QSignalMapper(this);
+
     QPushButton *bouton1= new QPushButton();
     bouton1->setText("1");
+    connect(bouton1, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(bouton1, "1");
+
     QPushButton *bouton2= new QPushButton();
     bouton2->setText("2");
+    connect(bouton2, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(bouton2, "2");
+
     QPushButton *bouton3= new QPushButton();
     bouton3->setText("3");
+    connect(bouton3, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(bouton3, "3");
+
     QPushButton *bouton4= new QPushButton();
     bouton4->setText("4");
+    connect(bouton4, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(bouton4, "4");
+
     QPushButton *bouton5= new QPushButton();
     bouton5->setText("5");
+    connect(bouton5, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(bouton5, "5");
+
     QPushButton *bouton6= new QPushButton();
     bouton6->setText("6");
+    connect(bouton6, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(bouton6, "6");
+
     QPushButton *bouton7= new QPushButton();
     bouton7->setText("7");
+    connect(bouton7, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(bouton7, "7");
+
     QPushButton *bouton8= new QPushButton();
     bouton8->setText("8");
+    connect(bouton8, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(bouton8, "8");
+
     QPushButton *bouton9= new QPushButton();
     bouton9->setText("9");
+    connect(bouton9, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(bouton9, "9");
+
+    QPushButton *boutonEspace= new QPushButton();
+    boutonEspace->setText("");
+    connect(boutonEspace, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(boutonEspace, " ");
+
+    QPushButton *boutonAddition= new QPushButton();
+    boutonAddition->setText("+");
+    connect(boutonAddition, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(boutonAddition, "+");
+
+    QPushButton *boutonSoustraction= new QPushButton();
+    boutonSoustraction->setText("-");
+    connect(boutonSoustraction, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(boutonSoustraction, "-");
+
+    QPushButton *boutonMulitplication= new QPushButton();
+    boutonMulitplication->setText("*");
+    connect(boutonMulitplication, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(boutonMulitplication, "*");
+
+    QPushButton *boutonDivision= new QPushButton();
+    boutonDivision->setText("/");
+    connect(boutonDivision, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    signalMapper->setMapping(boutonDivision, "/");
+
+
+    connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(appendInputKeyboard(QString)));
+
+
+    QPushButton *boutonEntree= new QPushButton();
+    boutonEntree->setText("Entrée");
+    connect(boutonEntree, SIGNAL(clicked()), this, SLOT(returnPressedStr()));
+
+    QVBoxLayout *layoutOperateurs = new QVBoxLayout();
+    layoutOperateurs->addWidget(boutonAddition);
+    layoutOperateurs->addWidget(boutonSoustraction);
+    layoutOperateurs->addWidget(boutonMulitplication);
+    layoutOperateurs->addWidget(boutonDivision);
+    layoutOperateurs->addWidget(boutonEntree);
+
+
 
     //Crée un layout contenant le clavier numérique
+
     layoutClavier->addWidget(bouton1, 0,0);
     layoutClavier->addWidget(bouton2, 0,1);
     layoutClavier->addWidget(bouton3, 0,2);
@@ -62,11 +142,16 @@ MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), man
     layoutClavier->addWidget(bouton7, 2,0);
     layoutClavier->addWidget(bouton8, 2,1);
     layoutClavier->addWidget(bouton9, 2,2);
+    layoutClavier->addWidget(boutonEspace,3,0,1,3);
+    layoutClavier->addLayout(layoutOperateurs, 0,3,4,1);
+
+    conteneurClavier = new QWidget();
+    conteneurClavier->setLayout(layoutClavier);
 
     //Crée un layout avec l'historique de commandes, la zone d'entrée et le clavier
     verticalLayout->addWidget(vueHistoriqueCommandes);
     verticalLayout->addWidget(inputLine);
-    verticalLayout->addLayout(layoutClavier);
+    verticalLayout->addWidget(conteneurClavier);
 
     //Assemble les layouts
     mainLayout->addWidget(vuePile);
@@ -457,4 +542,11 @@ void MainWindow::updateTab(int index){
         listeVariables->setModel(modeleVariables);
     }
 
+}
+
+void MainWindow::afficherClavier(bool affichage){
+        if(affichage)
+            conteneurClavier->show();
+        else
+            conteneurClavier->hide();
 }

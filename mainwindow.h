@@ -12,6 +12,8 @@
 #include <QStringListModel>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QSignalMapper>
+#include <QGridLayout>
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +31,7 @@ private:
     Ui::MainWindow *ui;
     Manager* manager;
     QLineEdit *inputLine;
+    QGridLayout *layoutClavier;
     QTextEdit *zoneProgramme;
     QLineEdit *zoneIdentifiant;
     QTextEdit *zoneVariable;
@@ -46,6 +49,8 @@ private:
     QPushButton *boutonSupprimerVariable;
     QPushButton *boutonModifierVariable;
     QTabWidget *tabWidget;
+    QAction *actionAfficherClavier;
+    QWidget* conteneurClavier;
     Pile* pile;
 
 
@@ -57,16 +62,14 @@ public slots :
     void modifierProgramme();
     void effacerChampsProgramme();
     void updateTab(int index);
-
-
+    void appendInputKeyboard(QString input){ inputLine->insert(input); interpreter(inputLine->text());}
     void ajouterVariable();
     void supprimerVariable();
     void afficherVariableListe(QModelIndex modelIndex);
     void modifierVariable();
     void effacerChampsVariable();
-
-
     void returnPressedStr();
+    void afficherClavier(bool affichage);
 
 };
 

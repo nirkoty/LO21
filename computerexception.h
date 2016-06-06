@@ -11,9 +11,9 @@ using namespace std;
 class ComputerException
 {
 public:
-    char* info;
+    QString info;
     public:
-    ComputerException(char* i) throw():info(i){}
+    ComputerException(const QString& i) throw():info(i){}
     virtual ~ComputerException() throw(){}
     const void what() const throw();
 };

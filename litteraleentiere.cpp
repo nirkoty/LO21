@@ -105,12 +105,7 @@ Litterale* LitteraleEntiere::operator-(Litterale& lit2){
     }
     else if(LitteraleComplexe *lit2E = dynamic_cast<LitteraleComplexe*>(&lit2)) {
 
-        /*double somme = this->signe*valeur-lit2E->getSigne()*lit2E->getReelle()->getValeur();
-        bool neg;
-        if(somme>=0)
-            neg=1;
-        else
-            neg=-1;*/
+
 
         qDebug() << "LittEnt operateur- avec complexe ";
 
