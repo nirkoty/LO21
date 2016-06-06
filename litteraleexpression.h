@@ -3,7 +3,6 @@
 
 
 #include "litterale.h"
-#include "operande.h"
 #include "QString"
 #include <vector>
 #include "manager.h"
@@ -25,7 +24,6 @@ public:
 
 private:
     QString expression;
-    std::vector<Operande*> operandes;
     Manager* manager;
 };
 

@@ -12,19 +12,70 @@
 #include "QErrorMessage"
 #include <QMenu>
 
-MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), manager(man)
+MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), manager(man), nbElementsAffichablesPile(1)
 {
 
     pile = manager->getPile();
+
+    QXmlStreamReader xmlReader3;
+    QFile filePile3("parametres.xml");
+    filePile3.open(QFile::ReadOnly);
+    xmlReader3.setDevice(&filePile3);
+
+
+
+    xmlReader3.readNext();
+    QString valeur;
+
+
+    while(!xmlReader3.atEnd() && !xmlReader3.hasError()) {
+
+            QXmlStreamReader::TokenType token = xmlReader3.readNext();
+
+            if(token == QXmlStreamReader::StartDocument) {
+                    continue;
+            }
+
+            if(token == QXmlStreamReader::StartElement) {
+
+                    if(xmlReader3.name() == "clavierVisible") {
+                            xmlReader3.readElementText();
+                    }
+
+                    if(xmlReader3.name() == "valeur") {
+                         valeur= xmlReader3.readElementText();
+                         if(valeur=="1")
+                             clavierVisible=true;
+                         else
+                             clavierVisible=false;
+                    }
+
+                    if(xmlReader3.name() == "nbElementsVisiblesPile") {
+                           xmlReader3.readElementText();
+                    }
+
+                    if(xmlReader3.name() == "valeur") {
+
+                        valeur = xmlReader3.readElementText();
+                        nbElementsAffichablesPile = valeur.toInt();
+
+                    }
+            }
+    }
 
     //paramètres d'affichage
     QMenu *menuAfficher = menuBar()->addMenu("&Afficher");
     actionAfficherClavier = new QAction("&Afficher le clavier", this);
     actionAfficherClavier->setCheckable(true);
     actionAfficherClavier->setChecked(true);
+
+    QAction* actionNbElementsPile = new QAction("&Modifier le nombre d'élements affichables dans la pile", this);
+
     menuAfficher->addAction(actionAfficherClavier);
+    menuAfficher->addAction(actionNbElementsPile);
 
     QObject::connect(actionAfficherClavier, SIGNAL(toggled(bool)), this, SLOT(afficherClavier(bool)));
+    QObject::connect(actionNbElementsPile, SIGNAL(triggered(bool)), this, SLOT(modifierNbElementsAffichesPile()));
 
 
     // Général
@@ -545,8 +596,47 @@ void MainWindow::updateTab(int index){
 }
 
 void MainWindow::afficherClavier(bool affichage){
-        if(affichage)
+        if(affichage){
             conteneurClavier->show();
-        else
+            clavierVisible=true;
+        }
+        else{
             conteneurClavier->hide();
+            clavierVisible=false;
+        }
+}
+
+void MainWindow::modifierNbElementsAffichesPile(){
+    qDebug()<<"test"<< nbElementsAffichablesPile;
+    bool ok;
+    int result =QInputDialog::getInt(this, tr("Modifier le nombre d'élements affichables dans la pile"), tr("Percentage:"), nbElementsAffichablesPile, 1, 100, 1, &ok);
+    if (ok)
+        nbElementsAffichablesPile=result;
+    ecrireParametres();
+}
+
+
+void MainWindow::ecrireParametres(){
+    QString path("parametres.xml");
+    QFile file(path);
+    file.open(QFile::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.setAutoFormattingIndent(2);
+    xmlWriter.writeStartDocument();
+
+    xmlWriter.writeStartElement("parametres");
+
+    xmlWriter.writeStartElement("clavierVisible");
+    xmlWriter.writeTextElement("valeur", QString::number(clavierVisible));
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeStartElement("nbElementsVisiblesPile");
+    xmlWriter.writeTextElement("valeur", QString::number(nbElementsAffichablesPile));
+    xmlWriter.writeEndElement();
+
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndDocument();
+
+    file.close();
 }

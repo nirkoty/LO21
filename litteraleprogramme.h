@@ -3,15 +3,12 @@
 
 
 #include "QString"
-#include "operande.h"
 #include <vector>
 #include "litterale.h"
 
 class LitteraleProgramme : public Litterale
 {
 private:
-    std::vector<Operande*> operandes;
-    int nbOperandes;
     QString programme;
 
 public:

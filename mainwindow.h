@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QSignalMapper>
 #include <QGridLayout>
+#include <QInputDialog>
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +26,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(Manager* man,  QWidget *parent = 0);
+    void ecrireParametres();
     ~MainWindow();
 
 private:
@@ -52,6 +54,8 @@ private:
     QAction *actionAfficherClavier;
     QWidget* conteneurClavier;
     Pile* pile;
+    int nbElementsAffichablesPile;
+    bool clavierVisible;
 
 
 public slots :
@@ -70,6 +74,7 @@ public slots :
     void effacerChampsVariable();
     void returnPressedStr();
     void afficherClavier(bool affichage);
+    void modifierNbElementsAffichesPile();
 
 };
 

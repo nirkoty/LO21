@@ -47,7 +47,7 @@ Litterale* LitteraleEntiere::operator+(Litterale& lit2){
         return new LitteraleReelle(neg, somme);
     }
     else if(LitteraleRationnelle *lit2E = dynamic_cast<LitteraleRationnelle*>(&lit2)) {
-        double somme =this->signe*valeur*lit2E->getDenominateur().getValeur() +lit2E->getSigne()*lit2E->getNominateur().getValeur();
+        double somme = signe*valeur*lit2E->getDenominateur().getValeur() +lit2E->getSigne()*lit2E->getNominateur().getValeur();
         bool neg;
         if(somme>=0)
             neg=1;
