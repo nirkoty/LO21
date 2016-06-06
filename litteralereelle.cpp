@@ -19,7 +19,8 @@ LitteraleReelle::LitteraleReelle(QString exp){
 
 QString LitteraleReelle::toString(){
 
-      return QString::number(valeur);
+    if (signe==-1) return("-"+QString::number(valeur));
+    else return QString::number(valeur);
 }
 
 bool LitteraleReelle::estLitteraleReelle(QString bloc){
@@ -51,7 +52,7 @@ Litterale* LitteraleReelle::operator+(Litterale& lit2){
 
     else if(LitteraleReelle *lit2E = dynamic_cast<LitteraleReelle*>(&lit2)) {
         double somme =this->signe*valeur+lit2E->getSigne()*lit2E->getValeur();
-        bool neg;
+        int neg;
         if(somme>=0)
             neg=1;
         else
@@ -59,8 +60,8 @@ Litterale* LitteraleReelle::operator+(Litterale& lit2){
         return new LitteraleReelle(neg, somme);
     }
     else if(LitteraleRationnelle *lit2E = dynamic_cast<LitteraleRationnelle*>(&lit2)) {
-        double somme = signe*valeur+lit2E->getSigne()*(lit2E->getNominateur().getValeur()/lit2E->getDenominateur().getValeur());
-        bool neg;
+        double somme = signe*valeur+lit2E->getSigne()*(lit2E->getNumerateur().getValeur()/lit2E->getDenominateur().getValeur());
+        int neg;
         if(somme>=0)
             neg=1;
         else
@@ -98,7 +99,7 @@ Litterale* LitteraleReelle::operator-(Litterale& lit2){
 
         qDebug()<<this->signe <<" "<<valeur<<" "<<lit2E->getSigne()<<" "<<lit2E->getValeur();
         double somme =this->signe*valeur-lit2E->getSigne()*lit2E->getValeur();
-        bool neg;
+        int neg;
         if(somme>=0)
             neg=1;
         else
@@ -107,8 +108,8 @@ Litterale* LitteraleReelle::operator-(Litterale& lit2){
         return new LitteraleReelle(neg, somme);
     }
     else if(LitteraleRationnelle *lit2E = dynamic_cast<LitteraleRationnelle*>(&lit2)) {
-        double somme = signe*valeur+lit2E->getSigne()*(lit2E->getNominateur().getValeur()/lit2E->getDenominateur().getValeur());
-        bool neg;
+        double somme = signe*valeur+lit2E->getSigne()*(lit2E->getNumerateur().getValeur()/lit2E->getDenominateur().getValeur());
+        int neg;
         if(somme>=0)
             neg=1;
         else
@@ -145,7 +146,7 @@ Litterale* LitteraleReelle::operator*(Litterale& lit2){
 
 
         double somme =this->signe*valeur*lit2E->getSigne()*lit2E->getValeur();
-        bool neg;
+        int neg;
         if((signe==1 && lit2E->getSigne()==1) || (signe==-1 && lit2E->getSigne()==-1))
             neg=1;
         else
@@ -154,8 +155,8 @@ Litterale* LitteraleReelle::operator*(Litterale& lit2){
         return new LitteraleReelle(neg, somme);
     }
     else if(LitteraleRationnelle *lit2E = dynamic_cast<LitteraleRationnelle*>(&lit2)) {
-        double somme =this->signe*valeur*lit2E->getSigne()*lit2E->getNominateur().getValeur();
-        bool neg;
+        double somme =this->signe*valeur*lit2E->getSigne()*lit2E->getNumerateur().getValeur();
+        int neg;
         if((signe==1 && lit2E->getSigne()==1) || (signe==-1 && lit2E->getSigne()==-1))
             neg=1;
         else
@@ -201,7 +202,7 @@ Litterale* LitteraleReelle::operator/(Litterale& lit2){
 
 
         double div =(this->signe*valeur)/(lit2E->getSigne()*lit2E->getValeur());
-        bool neg;
+        int neg;
         if((signe==1 && lit2E->getSigne()==1) || (signe==-1 && lit2E->getSigne()==-1))
             neg=1;
         else
@@ -211,8 +212,8 @@ Litterale* LitteraleReelle::operator/(Litterale& lit2){
     }
 
     else if(LitteraleRationnelle *lit2E = dynamic_cast<LitteraleRationnelle*>(&lit2)) {
-        double somme =this->signe*valeur*lit2E->getSigne() / lit2E->getNominateur().getValeur();
-        bool neg;
+        double somme =this->signe*valeur*lit2E->getSigne() / lit2E->getNumerateur().getValeur();
+        int neg;
         if((signe==1 && lit2E->getSigne()==1) || (signe==-1 && lit2E->getSigne()==-1))
             neg=1;
         else

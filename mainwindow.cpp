@@ -7,82 +7,20 @@
 #include "QLineEdit"
 #include "QWidget"
 #include "QtGui"
+#include "QGridLayout"
 #include "QTextEdit"
 #include "QTabWidget"
 #include "QErrorMessage"
-#include <QMenu>
 
-MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), manager(man), nbElementsAffichablesPile(1)
+MainWindow::MainWindow(Pile& pile, Manager *man, QWidget *parent) : QMainWindow(parent), manager(man)
 {
-
-    pile = manager->getPile();
-
-    QXmlStreamReader xmlReader3;
-    QFile filePile3("parametres.xml");
-    filePile3.open(QFile::ReadOnly);
-    xmlReader3.setDevice(&filePile3);
-
-
-
-    xmlReader3.readNext();
-    QString valeur;
-
-
-    while(!xmlReader3.atEnd() && !xmlReader3.hasError()) {
-
-            QXmlStreamReader::TokenType token = xmlReader3.readNext();
-
-            if(token == QXmlStreamReader::StartDocument) {
-                    continue;
-            }
-
-            if(token == QXmlStreamReader::StartElement) {
-
-                    if(xmlReader3.name() == "clavierVisible") {
-                            xmlReader3.readElementText();
-                    }
-
-                    if(xmlReader3.name() == "valeur") {
-                         valeur= xmlReader3.readElementText();
-                         if(valeur=="1")
-                             clavierVisible=true;
-                         else
-                             clavierVisible=false;
-                    }
-
-                    if(xmlReader3.name() == "nbElementsVisiblesPile") {
-                           xmlReader3.readElementText();
-                    }
-
-                    if(xmlReader3.name() == "valeur") {
-
-                        valeur = xmlReader3.readElementText();
-                        nbElementsAffichablesPile = valeur.toInt();
-
-                    }
-            }
-    }
-
-    //paramètres d'affichage
-    QMenu *menuAfficher = menuBar()->addMenu("&Afficher");
-    actionAfficherClavier = new QAction("&Afficher le clavier", this);
-    actionAfficherClavier->setCheckable(true);
-    actionAfficherClavier->setChecked(true);
-
-    QAction* actionNbElementsPile = new QAction("&Modifier le nombre d'élements affichables dans la pile", this);
-
-    menuAfficher->addAction(actionAfficherClavier);
-    menuAfficher->addAction(actionNbElementsPile);
-
-    QObject::connect(actionAfficherClavier, SIGNAL(toggled(bool)), this, SLOT(afficherClavier(bool)));
-    QObject::connect(actionNbElementsPile, SIGNAL(triggered(bool)), this, SLOT(modifierNbElementsAffichesPile()));
 
 
     // Général
     QHBoxLayout *mainLayout= new QHBoxLayout();
-    tabWidget = new QTabWidget();
+    QTabWidget *tabWidget = new QTabWidget();
     QVBoxLayout *verticalLayout = new QVBoxLayout();
-    layoutClavier = new QGridLayout;
+    QGridLayout *layoutClavier = new QGridLayout;
 
     //Vue de la pile (gauche)
     QListView *vuePile = new QListView();
@@ -93,97 +31,26 @@ MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), man
     inputLine = new QLineEdit();
 
     //Clavier numérique
-    QSignalMapper *signalMapper = new QSignalMapper(this);
-
     QPushButton *bouton1= new QPushButton();
     bouton1->setText("1");
-    connect(bouton1, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(bouton1, "1");
-
     QPushButton *bouton2= new QPushButton();
     bouton2->setText("2");
-    connect(bouton2, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(bouton2, "2");
-
     QPushButton *bouton3= new QPushButton();
     bouton3->setText("3");
-    connect(bouton3, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(bouton3, "3");
-
     QPushButton *bouton4= new QPushButton();
     bouton4->setText("4");
-    connect(bouton4, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(bouton4, "4");
-
     QPushButton *bouton5= new QPushButton();
     bouton5->setText("5");
-    connect(bouton5, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(bouton5, "5");
-
     QPushButton *bouton6= new QPushButton();
     bouton6->setText("6");
-    connect(bouton6, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(bouton6, "6");
-
     QPushButton *bouton7= new QPushButton();
     bouton7->setText("7");
-    connect(bouton7, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(bouton7, "7");
-
     QPushButton *bouton8= new QPushButton();
     bouton8->setText("8");
-    connect(bouton8, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(bouton8, "8");
-
     QPushButton *bouton9= new QPushButton();
     bouton9->setText("9");
-    connect(bouton9, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(bouton9, "9");
-
-    QPushButton *boutonEspace= new QPushButton();
-    boutonEspace->setText("");
-    connect(boutonEspace, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(boutonEspace, " ");
-
-    QPushButton *boutonAddition= new QPushButton();
-    boutonAddition->setText("+");
-    connect(boutonAddition, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(boutonAddition, "+");
-
-    QPushButton *boutonSoustraction= new QPushButton();
-    boutonSoustraction->setText("-");
-    connect(boutonSoustraction, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(boutonSoustraction, "-");
-
-    QPushButton *boutonMulitplication= new QPushButton();
-    boutonMulitplication->setText("*");
-    connect(boutonMulitplication, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(boutonMulitplication, "*");
-
-    QPushButton *boutonDivision= new QPushButton();
-    boutonDivision->setText("/");
-    connect(boutonDivision, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    signalMapper->setMapping(boutonDivision, "/");
-
-
-    connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(appendInputKeyboard(QString)));
-
-
-    QPushButton *boutonEntree= new QPushButton();
-    boutonEntree->setText("Entrée");
-    connect(boutonEntree, SIGNAL(clicked()), this, SLOT(returnPressedStr()));
-
-    QVBoxLayout *layoutOperateurs = new QVBoxLayout();
-    layoutOperateurs->addWidget(boutonAddition);
-    layoutOperateurs->addWidget(boutonSoustraction);
-    layoutOperateurs->addWidget(boutonMulitplication);
-    layoutOperateurs->addWidget(boutonDivision);
-    layoutOperateurs->addWidget(boutonEntree);
-
-
 
     //Crée un layout contenant le clavier numérique
-
     layoutClavier->addWidget(bouton1, 0,0);
     layoutClavier->addWidget(bouton2, 0,1);
     layoutClavier->addWidget(bouton3, 0,2);
@@ -193,20 +60,19 @@ MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), man
     layoutClavier->addWidget(bouton7, 2,0);
     layoutClavier->addWidget(bouton8, 2,1);
     layoutClavier->addWidget(bouton9, 2,2);
-    layoutClavier->addWidget(boutonEspace,3,0,1,3);
-    layoutClavier->addLayout(layoutOperateurs, 0,3,4,1);
-
-    conteneurClavier = new QWidget();
-    conteneurClavier->setLayout(layoutClavier);
 
     //Crée un layout avec l'historique de commandes, la zone d'entrée et le clavier
     verticalLayout->addWidget(vueHistoriqueCommandes);
     verticalLayout->addWidget(inputLine);
-    verticalLayout->addWidget(conteneurClavier);
+    verticalLayout->addLayout(layoutClavier);
 
     //Assemble les layouts
     mainLayout->addWidget(vuePile);
     mainLayout->addLayout(verticalLayout);
+
+
+    //QWidget *zoneCentrale = new QWidget;
+    //zoneCentrale->setLayout(mainLayout);
 
 
     QWidget* tab1 = new QWidget();
@@ -216,7 +82,7 @@ MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), man
     QObject::connect(inputLine, SIGNAL(textChanged(QString)), this, SLOT(interpreter(QString))) ;
     QObject::connect(inputLine,SIGNAL(returnPressed()), this, SLOT(returnPressedStr()));
 
-    pile->setView(vuePile);
+    pile.setView(vuePile);
 
 
 
@@ -316,99 +182,6 @@ MainWindow::MainWindow(Manager *man, QWidget *parent) : QMainWindow(parent), man
    QObject::connect(boutonModifier, SIGNAL(clicked(bool)), this, SLOT(modifierProgramme()));
 
 
-
-
-   //---------------------------------TAB3--------------------------------------------
-
-
-   QHBoxLayout *layoutVariable = new QHBoxLayout();
-   QVBoxLayout *layoutEditionVariable = new QVBoxLayout();
-   QHBoxLayout *layoutBoutonsVariable = new QHBoxLayout();
-
-   listeVariables = new QListView();
-
-   zoneVariable = new QTextEdit();
-   zoneIdentifiantVariable = new QLineEdit();
-   boutonValiderVariable = new QPushButton("Ajouter");
-   boutonEffacerVariable = new QPushButton("Effacer");
-   boutonModifierVariable = new QPushButton("Modifier");
-   boutonSupprimerVariable = new QPushButton("Supprimer");
-   boutonSupprimerVariable->setEnabled(false);
-   boutonModifierVariable->setEnabled(false);
-
-
-
-  layoutBoutonsVariable->addWidget(boutonValiderVariable);
-  layoutBoutonsVariable->addWidget(boutonEffacerVariable);
-  layoutBoutonsVariable->addWidget(boutonModifierVariable);
-  layoutBoutonsVariable->addWidget(boutonSupprimerVariable);
-
-
-  layoutEditionVariable->addWidget(zoneVariable);
-  layoutEditionVariable->addWidget(zoneIdentifiantVariable);
-  layoutEditionVariable->addLayout(layoutBoutonsVariable);
-
-  layoutVariable->addLayout(layoutEditionVariable);
-  layoutVariable->addWidget(listeVariables);
-
-  QWidget* tab3 = new QWidget();
-
-  tab3->setLayout(layoutVariable);
-
-  tabWidget->addTab(tab3, "Variables");
-
-
-
-  QXmlStreamReader xmlReader2;
-  QFile fileVariable("variables.xml");
-  fileVariable.open(QFile::ReadOnly);
-  xmlReader2.setDevice(&fileVariable);
-
-
-
-  xmlReader2.readNext();
-
-  while(!xmlReader2.atEnd() && !xmlReader2.hasError()) {
-
-          QXmlStreamReader::TokenType token = xmlReader2.readNext();
-
-          if(token == QXmlStreamReader::StartDocument) {
-                  continue;
-          }
-
-          if(token == QXmlStreamReader::StartElement) {
-
-                  if(xmlReader2.name() == "identifiant") {
-                          strIdentifiant= xmlReader2.readElementText();
-                  }
-
-                  if(xmlReader2.name() == "string") {
-                       str= xmlReader2.readElementText();
-                       manager->insererVariable(strIdentifiant, str);
-                  }
-          }
-  }
-
-  QStringList* listeVariablesStr = manager->getListVariables();
-
-  modeleVariables = new QStringListModel(*listeVariablesStr, this);
-
-  listeVariables->setEditTriggers(QAbstractItemView::NoEditTriggers);
-  listeVariables->setModel(modeleVariables);
-
-
-
-  fileVariable.close();
-
-  QObject::connect(boutonValiderVariable, SIGNAL(clicked(bool)), this, SLOT(ajouterVariable()));
-  QObject::connect(listeVariables, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(afficherVariableListe(QModelIndex)));
-  QObject::connect(boutonEffacerVariable, SIGNAL(clicked(bool)), this, SLOT(effacerChampsVariable()));
-  QObject::connect(boutonSupprimerVariable, SIGNAL(clicked(bool)), this, SLOT(supprimerVariable()));
-  QObject::connect(boutonModifierVariable, SIGNAL(clicked(bool)), this, SLOT(modifierVariable()));
-
-  QObject::connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(updateTab(int)));
-
-
    setCentralWidget(tabWidget);
 
 
@@ -447,12 +220,14 @@ void MainWindow::ajouterProgramme(){
 
 
 
-        manager->ecrireFichierProgramme(mapProgramme, zoneIdentifiant, zoneProgramme);
+        ecrireFichierProgramme();
 
     }
     else{
         qDebug()<<"erreur ajout";
-
+        QMessageBox boiteErreur;
+        boiteErreur.setText("Un programme à ce nom existe déja");
+        boiteErreur.exec();
     }
  }
 
@@ -474,7 +249,7 @@ void MainWindow::modifierProgramme(){
     mapProgramme->remove(zoneIdentifiant->text());
     manager->insererProgramme(zoneIdentifiant->text(), zoneProgramme->toPlainText());
 
-    manager->ecrireFichierProgramme(mapProgramme, zoneIdentifiant, zoneProgramme);
+    ecrireFichierProgramme();
 }
 
 
@@ -487,7 +262,7 @@ void MainWindow::supprimerProgramme(){
     int indexToDelete = programmesStr.indexOf(zoneIdentifiant->text());
     modeleProgrammes->removeRow(indexToDelete);
 
-    manager->ecrireFichierProgramme(mapProgramme, zoneIdentifiant, zoneProgramme);
+    ecrireFichierProgramme();
 
 }
 
@@ -497,78 +272,38 @@ void MainWindow::effacerChampsProgramme(){
     boutonSupprimer->setDisabled(true);
 }
 
+void MainWindow::ecrireFichierProgramme(){
 
 
-void MainWindow::ajouterVariable(){
+    QMap<QString, QString>* mapProgramme=manager->getMapProgramme();
+    QMapIterator<QString, QString> it(*mapProgramme);
 
-    QMap<QString, QString>* mapVariable=manager->getMapVariables();
-    QMapIterator<QString, QString> it(*mapVariable);
-
-
-    if(zoneIdentifiantVariable->text()!="" && !mapVariable->contains(zoneIdentifiantVariable->text())){
-
-        manager->insererVariable(zoneIdentifiantVariable->text(), zoneVariable->toPlainText());
-
-
-        modeleVariables->insertRow(modeleVariables->rowCount());
-        QModelIndex index = modeleVariables->index(modeleVariables->rowCount()-1);
-        modeleVariables->setData(index, zoneIdentifiantVariable->text());
+    QString path("programmes.xml");
+    QFile file(path);
+    file.open(QFile::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.setAutoFormattingIndent(2);
+    xmlWriter.writeStartDocument();
 
 
 
-        manager->ecrireFichierVariable(mapVariable, zoneIdentifiantVariable, zoneVariable );
 
+    xmlWriter.writeStartElement("programmes");
+    while(it.hasNext()){
+
+        it.next();
+        xmlWriter.writeStartElement("programme");
+        xmlWriter.writeTextElement("identifiant",it.key());
+        xmlWriter.writeTextElement("string", it.value());
+        xmlWriter.writeEndElement();
     }
-    else{
-        qDebug()<<"erreur ajout";
-        QMessageBox boiteErreur;
-        boiteErreur.setText("Une variable à ce nom existe déja");
-        boiteErreur.exec();
-    }
- }
 
-
-
-void MainWindow::afficherVariableListe(QModelIndex modelIndex){
-
-    boutonSupprimerVariable->setEnabled(true);
-    boutonModifierVariable->setEnabled(true);
-    QMap<QString, QString>* mapVariable=manager->getMapVariables();
-    zoneVariable->setText(mapVariable->value(manager->getListVariables()->at(modelIndex.row())));
-    zoneIdentifiantVariable->setText(manager->getListVariables()->at(modelIndex.row()));
-
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndDocument();
+    zoneIdentifiant->clear();
+    zoneProgramme->clear();
 }
-
-
-void MainWindow::modifierVariable(){
-    QMap<QString, QString>* mapVariable=manager->getMapVariables();
-    mapVariable->remove(zoneIdentifiantVariable->text());
-    manager->insererVariable(zoneIdentifiantVariable->text(), zoneVariable->toPlainText());
-
-    manager->ecrireFichierVariable(mapVariable, zoneIdentifiantVariable, zoneVariable );
-}
-
-
-void MainWindow::supprimerVariable(){
-    boutonSupprimerVariable->setEnabled(false);
-    boutonModifierVariable->setEnabled(false);
-    QMap<QString, QString>* mapVariable=manager->getMapVariables();
-    mapVariable->remove(zoneIdentifiantVariable->text());
-    QStringList programmesStr= modeleVariables->stringList();
-    int indexToDelete = programmesStr.indexOf(zoneIdentifiantVariable->text());
-    modeleVariables->removeRow(indexToDelete);
-
-    manager->ecrireFichierVariable(mapVariable, zoneIdentifiantVariable, zoneVariable );
-
-}
-
-void MainWindow::effacerChampsVariable(){
-    zoneVariable->clear();
-    zoneIdentifiantVariable->clear();
-    boutonSupprimerVariable->setDisabled(true);
-}
-
-
 
 
 
@@ -577,66 +312,3 @@ void MainWindow::returnPressedStr(){
     inputLine->clear();
 }
 
-void MainWindow::updateTab(int index){
-    if(index==1){
-        delete modeleProgrammes;
-        QStringList* listeProgrammesStr = manager->getListProgrammes();
-        modeleProgrammes = new QStringListModel(*listeProgrammesStr, this);
-        listeProgrammes->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        listeProgrammes->setModel(modeleProgrammes);
-    }
-    else if(index==2){
-        delete modeleVariables;
-        QStringList* listeVariablesStr = manager->getListVariables();
-        modeleVariables = new QStringListModel(*listeVariablesStr, this);
-        listeVariables->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        listeVariables->setModel(modeleVariables);
-    }
-
-}
-
-void MainWindow::afficherClavier(bool affichage){
-        if(affichage){
-            conteneurClavier->show();
-            clavierVisible=true;
-        }
-        else{
-            conteneurClavier->hide();
-            clavierVisible=false;
-        }
-}
-
-void MainWindow::modifierNbElementsAffichesPile(){
-    qDebug()<<"test"<< nbElementsAffichablesPile;
-    bool ok;
-    int result =QInputDialog::getInt(this, tr("Modifier le nombre d'élements affichables dans la pile"), tr("Percentage:"), nbElementsAffichablesPile, 1, 100, 1, &ok);
-    if (ok)
-        nbElementsAffichablesPile=result;
-    ecrireParametres();
-}
-
-
-void MainWindow::ecrireParametres(){
-    QString path("parametres.xml");
-    QFile file(path);
-    file.open(QFile::WriteOnly);
-    QXmlStreamWriter xmlWriter(&file);
-    xmlWriter.setAutoFormatting(true);
-    xmlWriter.setAutoFormattingIndent(2);
-    xmlWriter.writeStartDocument();
-
-    xmlWriter.writeStartElement("parametres");
-
-    xmlWriter.writeStartElement("clavierVisible");
-    xmlWriter.writeTextElement("valeur", QString::number(clavierVisible));
-    xmlWriter.writeEndElement();
-
-    xmlWriter.writeStartElement("nbElementsVisiblesPile");
-    xmlWriter.writeTextElement("valeur", QString::number(nbElementsAffichablesPile));
-    xmlWriter.writeEndElement();
-
-    xmlWriter.writeEndElement();
-    xmlWriter.writeEndDocument();
-
-    file.close();
-}

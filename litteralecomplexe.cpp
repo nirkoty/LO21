@@ -5,7 +5,7 @@
 #include "QStringList"
 #include <QDebug>
 
-LitteraleComplexe::LitteraleComplexe(LitteraleNumerique* re, LitteraleNumerique* im) : partieReelle(re), partieImaginaire(im){}
+LitteraleComplexe::LitteraleComplexe(LitteraleNumerique* re, LitteraleNumerique* im) : partieReelle(re), partieImaginaire(im){} //il faut faire des new ?
 
 LitteraleComplexe::LitteraleComplexe(QString input){
 
@@ -37,9 +37,28 @@ bool LitteraleComplexe::estLitteraleComplexe(QString bloc){
     return true;
 }
 
-
 QString LitteraleComplexe::toString(){
-    if (partieImaginaire->getSigne() == -1)    return(partieReelle->toString()+"-"+partieImaginaire->toString()+"i");
+    if (partieImaginaire->getSigne() == -1)    return(partieReelle->toString()+partieImaginaire->toString()+"i"); //le "-" est créé par le toString de la partie Im
     if (partieImaginaire->getSigne() == 1)    return(partieReelle->toString()+"+"+partieImaginaire->toString()+"i");
 
 }
+
+Litterale* LitteraleComplexe::operator+(Litterale& lit2){
+
+    // Si le second terme est un entier
+    if(LitteraleEntiere *lit2cast = dynamic_cast<LitteraleEntiere*>(&lit2)) {
+
+        return new LitteraleComplexe(dynamic_cast<LitteraleNumerique*>(*lit2cast + *this->getReelle()), this->getImaginaire());
+    }
+
+    // Si le second terme est un entier
+    if(LitteraleRationnelle *lit2cast = dynamic_cast<LitteraleRationnelle*>(&lit2)) {
+
+        return new LitteraleComplexe(dynamic_cast<LitteraleNumerique*>(*lit2cast + *this->getReelle()), this->getImaginaire());
+    }
+}
+
+
+Litterale* LitteraleComplexe::operator*(Litterale& lit2){return this;}
+Litterale* LitteraleComplexe::operator/(Litterale& lit2){return this;}
+Litterale* LitteraleComplexe::operator-(Litterale& lit2){return this;}

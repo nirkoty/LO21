@@ -8,13 +8,13 @@ class LitteraleEntiere :  public LitteraleNumerique
 {
 
 private:
-    int valeur;
+    unsigned int valeur;
 
 public:
     LitteraleEntiere();
-    LitteraleEntiere(int s, int val);
+    LitteraleEntiere(int s, unsigned int val);
     LitteraleEntiere(QString exp);
-    int getValeur() const {return valeur;}
+    unsigned int getValeur() const {return valeur;}
     QString toString();
     static bool estLitteraleEntiere(QString bloc);
     Litterale* operator+(Litterale& lit2);

@@ -12,6 +12,7 @@ public:
     LitteraleNumerique();
     LitteraleNumerique(int s);
     int getSigne(){return signe;}
+    void inverseSigne(){signe = signe * -1;}
 
 
     //virtual QString toString()=0;

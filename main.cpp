@@ -14,9 +14,14 @@ int main(int argc, char *argv[])
     qDebug()<<"coucou";
 
     QApplication a(argc, argv);
-    Manager *manager = new Manager();
-    MainWindow w(manager);
+    Pile pile;
+    Manager *manager = new Manager(pile);
+    MainWindow w(pile, manager);
     w.show();
+
+
+     //qDebug()<<LitteraleReelle::estLitteraleReelle("63.");
+    //qDebug()<<LitteraleComplexe::estLitteraleComplexe("2$2.2");
 
     return a.exec();
 }

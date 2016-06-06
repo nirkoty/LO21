@@ -2,12 +2,12 @@
 #define LITTERALE_H
 
 #include <QString>
+#include "operande.h"
 
-class Litterale
+class Litterale : public Operande
 {
 public:
     Litterale();
-    virtual QString toString()=0;
     virtual Litterale* operator+(Litterale& lit2) = 0;
     virtual Litterale* operator*(Litterale& lit2) = 0;
     virtual Litterale* operator-(Litterale& lit2) = 0;

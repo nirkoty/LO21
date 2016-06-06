@@ -3,7 +3,7 @@
 #include "litteralerationnelle.h"
 #include "litteralereelle.h"
 #include "litteralecomplexe.h"
-
+#include "operateur.h"
 #include <QDebug>
 
 LitteraleProgramme::LitteraleProgramme(QString input) : Litterale(), programme(input)
