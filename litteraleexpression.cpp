@@ -6,7 +6,7 @@
 #include <typeinfo>
 
 
-LitteraleExpression::LitteraleExpression(QString exp)
+LitteraleExpression::LitteraleExpression(QString exp, Manager* man) : manager(man)
 {
     exp = exp.remove(0,1); // enlève les ''
     expression= exp.remove(exp.length()-1, 1);
@@ -81,8 +81,7 @@ Litterale* LitteraleExpression::evaluerRec(QString exp){
         LitteraleNumerique *gauche=dynamic_cast<LitteraleNumerique*>(evaluerRec(exp.left(exp.indexOf("/"))));
         LitteraleNumerique *droite = dynamic_cast<LitteraleNumerique*>(evaluerRec(exp.right(exp.length()-exp.indexOf("/")-1)));
         Litterale *newLit = *gauche/ *droite;
-        //Litterale *newLit = *droite/(*gauche);
-        qDebug()<<"coucou"<<newLit->toString();
+
 
         delete gauche;
         delete droite;
@@ -97,6 +96,9 @@ Litterale* LitteraleExpression::evaluerRec(QString exp){
             return new LitteraleEntiere(exp);
         if(LitteraleReelle::estLitteraleReelle(exp))
             return new LitteraleReelle(exp);
+        if(manager->estLitteraleAtome(exp))
+            return manager->getAtome(exp);
+
     }
 
 

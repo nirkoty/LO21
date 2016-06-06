@@ -7,30 +7,60 @@
 #include "litteraleprogramme.h"
 #include "litteraleexpression.h"
 
-Pile::Pile() : modeleProgrammes(new QStringListModel), indicePiles(0)
+Pile::Pile(Manager *man) : modeleProgrammes(new QStringListModel), indicePiles(0), manager(man)
 {
+    QXmlStreamReader xmlReader;
+    QFile filePile("pile.xml");
+    filePile.open(QFile::ReadOnly);
+    xmlReader.setDevice(&filePile);
+
+
+
+    xmlReader.readNext();
+    QString tmp;
+
+    while(!xmlReader.atEnd() && !xmlReader.hasError()) {
+
+            QXmlStreamReader::TokenType token = xmlReader.readNext();
+
+            if(token == QXmlStreamReader::StartDocument) {
+                    continue;
+            }
+            if(token == QXmlStreamReader::StartElement) {
+
+                    if(xmlReader.name() == "string") {
+                         tmp= xmlReader.readElementText();
+                         if(LitteraleReelle::estLitteraleReelle(tmp))
+                             empiler(new LitteraleReelle(tmp));
+                         else if (LitteraleEntiere::estLitteraleEntiere(tmp))
+                             empiler(new LitteraleEntiere(tmp));
+                         else if(LitteraleRationnelle::estLitteraleRationnelle(tmp)){
+                             empiler(new LitteraleRationnelle(tmp));
+                         }
+                         else if (LitteraleProgramme::estLitteraleProgramme(tmp))
+                             empiler(new LitteraleProgramme(tmp));
+                         else if (LitteraleExpression::estLitteraleExpression(tmp))
+                            empiler(new LitteraleExpression(tmp, manager));
+                    }
+            }
+    }
+    filePile.close();
     savedStates.push_back(vecteur);
 }
 
 
 void Pile::empiler(Litterale *lit){
 
-    qDebug()<<"empiler";
     vecteur.push_back(lit);
 
     modeleProgrammes->insertRow(modeleProgrammes->rowCount());
     QModelIndex index = modeleProgrammes->index(modeleProgrammes->rowCount()-1);
     modeleProgrammes->setData(index, lit->toString());
-    qDebug()<<"empiler2 "<<taille();
-    savePile();
-
 }
 
 void Pile::setView(QListView *viewPile){
     view=viewPile;
     view->setModel(modeleProgrammes);
-
-
 }
 
 Litterale* Pile::depiler(){
@@ -42,8 +72,6 @@ Litterale* Pile::depiler(){
 
 void Pile::dupliquer(){
     Litterale* last = vecteur.at(vecteur.size()-1);
-
-    qDebug()<<last->toString();
 
     if(dynamic_cast<LitteraleEntiere*>(last)){
         LitteraleEntiere* dup= dynamic_cast<LitteraleEntiere*>(last);
@@ -67,8 +95,10 @@ void Pile::dupliquer(){
     }
     if(dynamic_cast<LitteraleExpression*>(last)){
         LitteraleExpression* dup= dynamic_cast<LitteraleExpression*>(last);
-        empiler(new LitteraleExpression(dup->toString()));
+        empiler(new LitteraleExpression(dup->toString(), manager));
     }
+
+
 
 }
 
@@ -78,43 +108,66 @@ void Pile::swap(){
     Litterale* lit2 = depiler();
     empiler(lit1);
     empiler(lit2);
+
+
 }
 
 void Pile::clear(){
     while(vecteur.size()>0){
         delete depiler();
     }
+
 }
 
 void Pile::savePile(){
-    qDebug()<<indicePiles;
+
     if(indicePiles<savedStates.size()-1){
         unsigned int taille=savedStates.size();
         for(unsigned int i=indicePiles+1 ; i<taille; i++){
-            qDebug()<<"pop_back";
             savedStates.pop_back();
         }
     }
 
-
-
     savedStates.push_back(vecteur);
+    qDebug()<<"savePiles";
     indicePiles++;
-      qDebug()<<indicePiles<<"   "<<savedStates.size();
-    qDebug()<<"taille save "<<savedStates.size();
+
+
+    QString path("pile.xml");
+    QFile file(path);
+    file.open(QFile::WriteOnly);
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.setAutoFormattingIndent(2);
+    xmlWriter.writeStartDocument();
+
+    xmlWriter.writeStartElement("litterales");
+    Litterale* tmp;
+    for(unsigned int i=0; i<vecteur.size(); i++){
+
+        tmp=vecteur.at(i);
+        xmlWriter.writeStartElement("litterale");
+        xmlWriter.writeTextElement("string", tmp->toString());
+        xmlWriter.writeEndElement();
+    }
+
+    xmlWriter.writeEndElement();
+    xmlWriter.writeEndDocument();
+
+    file.close();
+
 }
 
 void Pile::undo(){
-    qDebug()<<"indicepiles  "<<indicePiles;
+
     vecteur = savedStates.at(--indicePiles);
-    qDebug()<<"taille undo "<<vecteur.size();
     afficherPile();
 
 }
 
 void Pile::redo(){
     vecteur = savedStates.at(++indicePiles);
-    qDebug()<<"taille redo "<<vecteur.size();
+
     afficherPile();
 }
 
@@ -136,13 +189,30 @@ void Pile::afficherPile(){
 }
 
 void Pile::empilerLastArgs(){
+
+
     for(unsigned int i=0; i<lastArgs.size(); i++)
     {
-        empiler(lastArgs.at(i));
+
+        if(LitteraleEntiere::estLitteraleEntiere(lastArgs.at(i)))
+            empiler(new LitteraleEntiere(lastArgs.at(i)));
+
+        if(LitteraleReelle::estLitteraleReelle(lastArgs.at(i)))
+            empiler(new LitteraleReelle(lastArgs.at(i)));
+
+        if(LitteraleRationnelle::estLitteraleRationnelle(lastArgs.at(i)))
+            empiler(new LitteraleRationnelle(lastArgs.at(i)));
+
+        if(LitteraleComplexe::estLitteraleComplexe(lastArgs.at(i)))
+            empiler(new LitteraleComplexe(lastArgs.at(i)));
+
+        if(LitteraleExpression::estLitteraleExpression(lastArgs.at(i)))
+            empiler(new LitteraleExpression(lastArgs.at(i), manager));
+        if(LitteraleProgramme::estLitteraleProgramme(lastArgs.at(i)))
+            empiler(new LitteraleProgramme(lastArgs.at(i)));
     }
-    savePile();
 }
 
-void Pile::setLastArgs(std::vector<Litterale *> args){
+void Pile::setLastArgs(std::vector<QString> args){
     lastArgs=args;
 }

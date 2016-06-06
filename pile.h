@@ -10,10 +10,14 @@
 #include <QStringListModel>
 
 
+class Pile;
+class Manager; // il faut prédéclarer les classes ici pour qu'elles puissent s'appeller entre elles
+#include "manager.h"
+
 class Pile
 {
 public:
-    Pile();
+    Pile(Manager *man);
     void empiler(Litterale* lit);
     void setView(QListView* viewPile);
     Litterale* depiler();
@@ -26,16 +30,17 @@ public:
     void redo();
     void afficherPile();
     void empilerLastArgs();
-    void setLastArgs(std::vector<Litterale*> args);
+    void setLastArgs(std::vector<QString> args);
 
 
 private:
     std::vector<Litterale*>vecteur;
     std::vector<std::vector<Litterale*> > savedStates;
-    std::vector<Litterale*> lastArgs;
+    std::vector<QString> lastArgs;
     int indicePiles;
     QListView* view;
     QStringListModel *modeleProgrammes;
+    Manager* manager;
 
 
 };

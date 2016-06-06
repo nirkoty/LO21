@@ -78,6 +78,7 @@ Litterale* LitteraleEntiere::operator-(Litterale& lit2){
 
     // Si le second terme est entier
     if(LitteraleEntiere *lit2E = dynamic_cast<LitteraleEntiere*>(&lit2)) {
+        qDebug() << "LitEnt - LitEnt";
         int somme = this->signe*valeur - lit2E->signe*lit2E->valeur;
         int s;
         if(somme >= 0)

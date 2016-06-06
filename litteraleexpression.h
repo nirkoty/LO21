@@ -3,14 +3,14 @@
 
 
 #include "litterale.h"
-#include "operande.h"
 #include "QString"
 #include <vector>
+#include "manager.h"
 
 class LitteraleExpression : public Litterale
 {
 public:
-    LitteraleExpression(QString exp);
+    LitteraleExpression(QString exp, Manager* man);
     static bool estLitteraleExpression(QString exp);
     QString toString() {return expression;}
     QString toStringAvecGuillemets();
@@ -24,7 +24,7 @@ public:
 
 private:
     QString expression;
-    std::vector<Operande*> operandes;
+    Manager* manager;
 };
 
 #endif // LITTERALEEXPRESSION_H

@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     pile.cpp \
     manager.cpp \
     litteraleexpression.cpp \
-    litteralenumerique.cpp
+    litteralenumerique.cpp \
+    computerexception.cpp
 
 HEADERS  += mainwindow.h \
     operande.h \
@@ -39,6 +40,7 @@ HEADERS  += mainwindow.h \
     pile.h \
     manager.h \
     litteraleexpression.h \
-    litteralenumerique.h
+    litteralenumerique.h \
+    computerexception.h
 
 FORMS    += mainwindow.ui
